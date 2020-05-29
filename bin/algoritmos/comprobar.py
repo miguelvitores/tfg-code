@@ -10,13 +10,24 @@ def comprobar_data_input(data_input):
         raise ex.EntradaNoLista("La entrada no puede ser una lista múltiple (con más de una fila)")
 
 
-def comprobar_ejecucion_busqueda(data_input, valor_busqueda):
-    """Realiza las comprobaciones básicas de la ejecución de una búsqueda y, si fallan, lanzan una excepción"""
-    comprobar_data_input(data_input)
+def comprobar_valor_busqueda(valor_busqueda):
     if not isinstance(valor_busqueda, int) or isinstance(valor_busqueda, bool):
         raise ex.ValorBusquedaNoNumeroEntero("La variable de búsqueda solo puede ser un número entero")
     if valor_busqueda < 0:
         raise ex.ValorBusquedaEnteroNegativo("La variable de búsqueda no puede ser un número entero negativo")
+
+
+def comprobar_ejecucion_busqueda(data_input, valor_busqueda):
+    """Realiza las comprobaciones básicas de la ejecución de una búsqueda y, si fallan, lanzan una excepción"""
+    comprobar_data_input(data_input)
+    comprobar_valor_busqueda(valor_busqueda)
+
+
+def comprobar_analisis_busqueda(data_input, valor_busqueda, analysis):
+    """Realiza las comprobaciones básicas del análisis de una búsqueda y, si fallan, lanzan una excepción"""
+    comprobar_ejecucion_busqueda(data_input, valor_busqueda)
+    if not analysis.esta_inicializado():
+        raise ex.AnalisisNoInicializado("El análisis debe estar incializado antes de entrar en el algoritmo")
 
 
 def comprobar_lista_ordenada_busqueda(data_input):

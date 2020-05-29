@@ -1,4 +1,5 @@
 import abc
+from bin.analysis import Analysis
 
 
 class Algoritmo(metaclass=abc.ABCMeta):
@@ -13,6 +14,6 @@ class Algoritmo(metaclass=abc.ABCMeta):
         NO se analiza"""
 
     @abc.abstractmethod
-    def analizar(self, data_input, analysis, valor_busqueda):
+    def analizar(self, data_input, analysis: Analysis, valor_busqueda):
         """Ejecuta el algoritmo de búsqueda u ordenación correspondiente para un determinado objeto lista.
         SÍ se analiza"""

@@ -17,3 +17,7 @@ class ValorBusquedaEnteroNegativo(ValueError):
 
 class ValorBusquedaNoEncontrado(ValueError):
     pass
+
+
+class AnalisisNoInicializado(ValueError):
+    pass
