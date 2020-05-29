@@ -7,6 +7,7 @@ from bin.algoritmos.ord.ordenacionburbuja import OrdenacionBurbuja
 from bin.algoritmos.ord.ordenacionquicksort import OrdenacionQuicksort
 from bin.algoritmos.ord.ordenacionshellsort import OrdenacionShellsort
 from bin.algoritmos.ord.ordenacionmergesort import OrdenacionMergesort
+from bin.algoritmos.ord.ordenacionradixsort import OrdenacionRadixsort
 
 tam = 32
 min_num = 8
@@ -84,6 +85,13 @@ class ValoresConocidos(unittest.TestCase):
         res = om.ejecutar(self.lista_desordenada)
         self.assertListEqual(self.lista_ordenada, res)
 
+    def test_ejecucion_ordenacion_radixsort(self):
+        """La ejecución del algoritmo de ordenación radixsort debe devolver la lista ordenada, recibiendo como entrada
+            una lista conocida"""
+        orx = OrdenacionRadixsort()
+        res = orx.ejecutar(self.lista_desordenada)
+        self.assertListEqual(self.lista_ordenada, res)
+
     def test_ejecucion_ordenacion_seleccion_un_elemento(self):
         """La ejecución del algoritmo de ordenación selección debe devolver la lista ordenada, recibiendo como entrada
             una lista conocida con un solo elemento"""
@@ -126,6 +134,13 @@ class ValoresConocidos(unittest.TestCase):
         res = om.ejecutar(self.lo1)
         self.assertListEqual(self.lo1_ordenada, res)
 
+    def test_ejecucion_ordenacion_radixsort_un_elemento(self):
+        """La ejecución del algoritmo de ordenación radixsort debe devolver la lista ordenada, recibiendo como entrada
+            una lista conocida con un solo elemento"""
+        orx = OrdenacionRadixsort()
+        res = orx.ejecutar(self.lo1)
+        self.assertListEqual(self.lo1_ordenada, res)
+
     def test_ejecucion_ordenacion_seleccion_casi_ordenada(self):
         """La ejecución del algoritmo de ordenación selección debe devolver la lista ordenada, recibiendo como entrada
             una lista conocida casi ordenada"""
@@ -166,6 +181,13 @@ class ValoresConocidos(unittest.TestCase):
             una lista conocida casi ordenada"""
         om = OrdenacionMergesort()
         res = om.ejecutar(self.lista_casi_ordenada)
+        self.assertListEqual(self.lista_ordenada, res)
+
+    def test_ejecucion_ordenacion_radixsort_casi_ordenada(self):
+        """La ejecución del algoritmo de ordenación radixsort debe devolver la lista ordenada, recibiendo como entrada
+            una lista conocida casi ordenada"""
+        orx = OrdenacionRadixsort()
+        res = orx.ejecutar(self.lista_casi_ordenada)
         self.assertListEqual(self.lista_ordenada, res)
 
 
@@ -215,6 +237,13 @@ class ListaAleatoriaSinRepeticion(unittest.TestCase):
         res = om.ejecutar(self.la_sr)
         self.assertListEqual(self.lista_ordenada, res)
 
+    def test_ejecucion_ordenacion_radixsort(self):
+        """La ejecución del algoritmo de ordenación radixsort debe devolver la lista ordenada, recibiendo como entrada
+            una lista aleatoria sin repetición"""
+        orx = OrdenacionRadixsort()
+        res = orx.ejecutar(self.la_sr)
+        self.assertListEqual(self.lista_ordenada, res)
+
 
 class ListaAleatoriaConRepeticion(unittest.TestCase):
     la_cr = cl.aleatoria(min_num, max_num, tam)
@@ -262,6 +291,13 @@ class ListaAleatoriaConRepeticion(unittest.TestCase):
         res = om.ejecutar(self.la_cr)
         self.assertListEqual(self.lista_ordenada, res)
 
+    def test_ejecucion_ordenacion_radixsort(self):
+        """La ejecución del algoritmo de ordenación radixsort debe devolver la lista ordenada, recibiendo como entrada
+            una lista aleatoria con repetición"""
+        orx = OrdenacionRadixsort()
+        res = orx.ejecutar(self.la_cr)
+        self.assertListEqual(self.lista_ordenada, res)
+
 
 class ListaYaOrdenada(unittest.TestCase):
     lo = cl.ordenada(min_num, min_num + tam)
@@ -306,6 +342,13 @@ class ListaYaOrdenada(unittest.TestCase):
             una lista ya ordenada"""
         om = OrdenacionMergesort()
         res = om.ejecutar(self.lo)
+        self.assertListEqual(self.lo, res)
+
+    def test_ejecucion_ordenacion_radixsort(self):
+        """La ejecución del algoritmo de ordenación radixsort debe devolver la lista ordenada, recibiendo como entrada
+            una lista ya ordenada"""
+        orx = OrdenacionRadixsort()
+        res = orx.ejecutar(self.lo)
         self.assertListEqual(self.lo, res)
 
 
@@ -364,6 +407,13 @@ class EntradasErroneas(unittest.TestCase):
         om = OrdenacionMergesort()
         for entrada_erronea in self.no_listas:
             self.assertRaises(ex.EntradaNoLista, om.ejecutar, entrada_erronea)
+
+    def test_ordenacion_radixsort_entrada_no_lista(self):
+        """La ejecución del algoritmo de ordenación radixsort debe fallar al recibir como entrada
+         un objeto que no sea una lista o una secuencia inmutable tuple """
+        orx = OrdenacionRadixsort()
+        for entrada_erronea in self.no_listas:
+            self.assertRaises(ex.EntradaNoLista, orx.ejecutar, entrada_erronea)
 
 
 if __name__ == '__main__':

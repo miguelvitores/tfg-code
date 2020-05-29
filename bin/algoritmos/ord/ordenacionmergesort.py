@@ -8,7 +8,7 @@ k = 7
 class OrdenacionMergesort(Ordenacion):
 
     def __init__(self):
-        super().__init__(0)
+        super().__init__(5)
 
     def ejecutar(self, data_input, valor_busqueda=None):
         comp(data_input)

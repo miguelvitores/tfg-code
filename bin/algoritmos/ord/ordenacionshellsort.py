@@ -6,7 +6,7 @@ from bin.algoritmos.comprobar import comprobar_ejecucion_ordenacion as comp
 class OrdenacionShellsort(Ordenacion):
 
     def __init__(self):
-        super().__init__(0)
+        super().__init__(4)
 
     def ejecutar(self, data_input, valor_busqueda=None):
         comp(data_input)

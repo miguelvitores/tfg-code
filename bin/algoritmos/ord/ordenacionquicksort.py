@@ -10,7 +10,7 @@ k = 10
 class OrdenacionQuicksort(Ordenacion):
 
     def __init__(self):
-        super().__init__(0)
+        super().__init__(3)
 
     def ejecutar(self, data_input, valor_busqueda=None):
         comp(data_input)
