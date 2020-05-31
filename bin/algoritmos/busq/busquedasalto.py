@@ -44,16 +44,10 @@ def busqueda_salto(lista, vb):
 
 
 def busqueda_salto_analisis(lista, vb, an):
-    an.sum_declaracion(1)
+    an.sum_declaracion(5)
     n = len(lista)
-
-    an.sum_declaracion(1)
     salto = int(math.sqrt(n))
-
-    an.sum_declaracion(2)
     izq, der = 0, 0
-
-    an.sum_declaracion(1)
     bloque_encontrado = False
 
     while izq < n and lista[izq] <= vb:
@@ -67,20 +61,23 @@ def busqueda_salto_analisis(lista, vb, an):
             an.sum_te(1)
             bloque_encontrado = True
             break
+
         an.sum_te(1)
         izq += salto
     an.sum_co(2)
 
     an.sum_co(1)
     if bloque_encontrado:
-        an.sum_eu(1)
+
+        an.sum_declaracion(1)
         for indice in range(izq, der + 1):
-            an.sum_te(1)
             an.sum_co(1)
+
             an.sum_co(1)
             if lista[indice] == vb:
                 return indice
-        an.sum_te(1)
+
+            an.sum_te(1)
         an.sum_co(1)
 
     raise ex.ValorBusquedaNoEncontrado("No se encontró el valor {0} con búsqueda salto".format(vb))

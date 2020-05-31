@@ -70,9 +70,12 @@ def busqueda_fibonacci_analisis(lista, vb, an):
         fbm = fbm2 + fbm1
     an.sum_co(1)
 
+    an.sum_eu(1)    # espacio utilizado por i
     while fbm > 1:
         an.sum_co(1)
+
         an.sum_te(1)
+        an.sum_co(1)    # comparación debida a la función min
         i = min(compensacion + fbm2, n - 1)
 
         if lista[i] < vb:
@@ -92,9 +95,10 @@ def busqueda_fibonacci_analisis(lista, vb, an):
             an.sum_co(2)
             return i
 
-    if lista[0] == vb:
-        an.sum_co(1)
-        return 0
     an.sum_co(1)
+
+    an.sum_co(1)
+    if lista[0] == vb:
+        return 0
 
     raise ex.ValorBusquedaNoEncontrado("No se encontró el valor {0} con búsqueda fibonacci".format(vb))

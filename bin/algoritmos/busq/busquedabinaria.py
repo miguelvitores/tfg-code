@@ -34,9 +34,11 @@ def busqueda_binaria(lista, minimo, maximo, vb):
 
 
 def busqueda_binaria_analisis(lista, minimo, maximo, vb, an):
-    an.sum_eu(3)
+    an.sum_eu(2)    # espacio usado por minimo y máximo
+    an.sum_eu(1)    # espacio usado por mitad
     while minimo <= maximo:
         an.sum_co(1)
+
         an.sum_te(1)
         mitad = minimo + (maximo - minimo) // 2
 

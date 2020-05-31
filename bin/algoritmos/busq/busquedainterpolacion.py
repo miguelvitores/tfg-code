@@ -44,16 +44,15 @@ def busqueda_interpolacion(lista, vb):
 
 
 def busqueda_interpolacion_analisis(lista, vb, an):
-    an.sum_declaracion(1)
+    an.sum_declaracion(3)
     n = len(lista)
-
-    an.sum_declaracion(2)
     izq, der = 0, n - 1
 
+    an.sum_eu(1)    # espacio utilizado por indice
     while lista[izq] < vb < lista[der]:
         an.sum_co(2)
 
-        an.sum_declaracion(1)
+        an.sum_te(1)
         indice = izq + (der - izq) * (vb - lista[izq]) // (lista[der] - lista[izq])
 
         if lista[indice] == vb:
@@ -67,6 +66,7 @@ def busqueda_interpolacion_analisis(lista, vb, an):
             an.sum_co(2)
             an.sum_te(1)
             der = indice - 1
+    an.sum_co(2)
 
     if lista[izq] == vb:
         an.sum_co(1)
@@ -74,6 +74,6 @@ def busqueda_interpolacion_analisis(lista, vb, an):
     if lista[der] == vb:
         an.sum_co(1)
         return der
-
     an.sum_co(2)
+
     raise ex.ValorBusquedaNoEncontrado("No se encontró el valor {0} con búsqueda interpolación".format(vb))

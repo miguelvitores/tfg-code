@@ -26,18 +26,18 @@ def busqueda_lineal(lista, vb):
 
 
 def busqueda_lineal_analisis(lista, vb, an):
-    an.sum_eu(1)
-    an.sum_te(1)
+    an.sum_declaracion(1)
     n = len(lista)
 
-    an.sum_eu(1)
+    an.sum_declaracion(1)
     for i in range(n):
-        an.sum_te(1)
         an.sum_co(1)
+
         an.sum_co(1)
         if lista[i] == vb:
             return i
-    an.sum_te(1)
+
+        an.sum_te(1)
     an.sum_co(1)
 
     raise ex.ValorBusquedaNoEncontrado("No se encontró el valor {0} con búsqueda lineal".format(vb))
