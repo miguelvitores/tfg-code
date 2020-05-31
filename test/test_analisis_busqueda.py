@@ -9,8 +9,8 @@ from bin.algoritmos.busq.busquedaexponencial import BusquedaExponencial
 from bin.algoritmos.busq.busquedafibonacci import BusquedaFibonacci
 from bin.analysis import Analysis
 
-tam = 32
-min_num = 8
+tam = 256
+min_num = 0
 max_num = 16
 max_espaciado = 4
 la_sr = cl.aleatoria_sin_repeticion(min_num, tam + min_num)

@@ -24,9 +24,18 @@ class Analysis:
         self.espacio_utilizado += cant
         self.tiempo_ejecucion += cant
 
-    def esta_inicializado(self):
+    def sum_intercambio_misma_lista(self, cant):
+        self.sum_declaracion(cant)
+        self.tiempo_ejecucion += cant
+        self.sum_in(cant)
+
+    def inicializado(self):
         return not (self.tiempo_ejecucion or self.espacio_utilizado or self.comparaciones or self.intercambios)
 
     def inicializado_sin_intercambios(self):
         return self.tiempo_ejecucion > 0 and self.espacio_utilizado > 0 and self.comparaciones > 0 \
                and self.intercambios == 0
+
+    def inicializado_sin_comparaciones(self):
+        return self.tiempo_ejecucion > 0 and self.espacio_utilizado > 0 and self.comparaciones == 0 \
+               and self.intercambios > 0

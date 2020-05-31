@@ -26,8 +26,15 @@ def comprobar_ejecucion_busqueda(data_input, valor_busqueda):
 def comprobar_analisis_busqueda(data_input, valor_busqueda, analysis):
     """Realiza las comprobaciones básicas del análisis de una búsqueda y, si fallan, lanzan una excepción"""
     comprobar_ejecucion_busqueda(data_input, valor_busqueda)
-    if not analysis.esta_inicializado():
-        raise ex.AnalisisNoInicializado("El análisis debe estar incializado antes de entrar en el algoritmo")
+    if not analysis.inicializado():
+        raise ex.AnalisisNoInicializado("El análisis debe estar inicializado antes de entrar en el algoritmo")
+
+
+def comprobar_analisis_ordenacion(data_input, analysis):
+    """Realiza las comprobaciones básicas del análisis de una ordenación y, si fallan, lanzan una excepción"""
+    comprobar_ejecucion_ordenacion(data_input)
+    if not analysis.inicializado():
+        raise ex.AnalisisNoInicializado("El análisis debe estar inicializado antes de entrar en el algoritmo")
 
 
 def comprobar_lista_ordenada_busqueda(data_input):
