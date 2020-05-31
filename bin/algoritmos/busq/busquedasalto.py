@@ -53,6 +53,7 @@ def busqueda_salto_analisis(lista, vb, an):
     while izq < n and lista[izq] <= vb:
         an.sum_co(2)
 
+        an.sum_co(1)  # comparación debida a la función min
         an.sum_te(1)
         der = min(n - 1, izq + salto)
 
