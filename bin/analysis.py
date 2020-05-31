@@ -6,25 +6,25 @@ class Analysis:
         self.comparaciones = 0
         self.intercambios = 0
 
-    def sum_te(self, cant):
+    def sum_te(self, cant: int):
         self.tiempo_ejecucion += cant
 
-    def sum_eu(self, cant):
+    def sum_eu(self, cant: int):
         self.espacio_utilizado += cant
 
-    def sum_co(self, cant):
+    def sum_co(self, cant: int):
         self.comparaciones += cant
         self.tiempo_ejecucion += cant
 
-    def sum_in(self, cant):
+    def sum_in(self, cant: int):
         self.intercambios += cant
         self.tiempo_ejecucion += cant
 
-    def sum_declaracion(self, cant):
+    def sum_declaracion(self, cant: int):
         self.espacio_utilizado += cant
         self.tiempo_ejecucion += cant
 
-    def sum_intercambio_misma_lista(self, cant):
+    def sum_intercambio_misma_lista(self, cant: int):
         self.sum_declaracion(cant)
         self.tiempo_ejecucion += cant
         self.sum_in(cant)
