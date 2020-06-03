@@ -59,13 +59,15 @@ def ordenacion_radixsort_analisis(ls, valor_maximo, an):
     digito_base = 1
     res = list(ls)
 
+    an.sum_eu(base)     # espacio utilizado por el array conteo
+    an.sum_eu(1)        # espacio utilizado por la variable i del for
     while valor_maximo // digito_base > 0:
         an.sum_co(1)
 
-        an.sum_declaracion(base)
+        an.sum_te(base)
         conteo = [0] * base
 
-        an.sum_declaracion(1)
+        an.sum_te(1)
         for i in range(n):
             an.sum_co(1)
 
@@ -78,7 +80,7 @@ def ordenacion_radixsort_analisis(ls, valor_maximo, an):
             an.sum_te(1)
         an.sum_co(1)
 
-        an.sum_declaracion(1)
+        an.sum_te(1)
         for i in range(1, base):
             an.sum_co(1)
 
@@ -88,7 +90,7 @@ def ordenacion_radixsort_analisis(ls, valor_maximo, an):
             an.sum_te(1)
         an.sum_co(1)
 
-        an.sum_declaracion(1)
+        an.sum_te(1)
         for i in range(n):
             an.sum_co(1)
 

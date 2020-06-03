@@ -52,7 +52,7 @@ def merge(ls, aux, pri, mit, ult):
 
 
 def ordenacion_mergesort_analisis(ls, aux, pri, ult, an):
-    an.sum_declaracion(len(aux) + 2)
+    an.sum_eu(len(aux) + 2)
 
     an.sum_co(1)
     if ult <= pri + k - 1:
@@ -60,7 +60,6 @@ def ordenacion_mergesort_analisis(ls, aux, pri, ult, an):
 
     else:
         an.sum_declaracion(1)
-        an.sum_te(1)
         mit = pri + (ult - pri) // 2
 
         ordenacion_mergesort_analisis(aux, ls, pri, mit, an)
@@ -75,7 +74,7 @@ def ordenacion_mergesort_analisis(ls, aux, pri, ult, an):
 
 
 def merge_analisis(ls, aux, pri, mit, ult, an):
-    an.sum_declaracion(len(aux) + 3)
+    an.sum_eu(len(aux) + 3)
 
     an.sum_declaracion(2)
     i, j = pri, mit + 1

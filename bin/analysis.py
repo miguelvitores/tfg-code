@@ -25,8 +25,7 @@ class Analysis:
         self.tiempo_ejecucion += cant
 
     def sum_intercambio_misma_lista(self, cant: int):
-        self.sum_declaracion(cant)
-        self.tiempo_ejecucion += cant
+        self.tiempo_ejecucion += 2 * cant
         self.sum_in(cant)
 
     def inicializado(self):

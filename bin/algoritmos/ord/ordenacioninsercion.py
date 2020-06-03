@@ -35,11 +35,12 @@ def ordenacion_insercion(lista, inicio, fin):
 def ordenacion_insercion_analisis(lista, inicio, fin, an):
     an.sum_eu(2)
 
+    an.sum_eu(1)    # espacio utilizado por j
     an.sum_declaracion(1)
     for i in range(inicio + 1, fin + 1):
         an.sum_co(1)
 
-        an.sum_declaracion(1)
+        an.sum_te(1)
         j = i
 
         while j > inicio:

@@ -37,13 +37,14 @@ def ordenacion_burbuja_analisis(lista, an):
     n = len(lista)
     repetir = True
 
+    an.sum_eu(1)    # espacio usado por i en el for
     while repetir:
         an.sum_co(1)
 
         an.sum_te(1)
         repetir = False
 
-        an.sum_declaracion(1)
+        an.sum_te(1)
         for i in range(1, n):
             an.sum_co(1)
 

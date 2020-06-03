@@ -49,14 +49,16 @@ def ordenacion_3xmas1shellsort_analisis(ls, an):
         h = 3*h + 1
     an.sum_co(1)
 
+    an.sum_eu(1)    # espacio utilizado por la variable i
+    an.sum_eu(1)    # espacio utilizado por la variable j
     while h >= 1:
         an.sum_co(1)
 
-        an.sum_declaracion(1)
+        an.sum_te(1)
         for i in range(h, n):
             an.sum_co(1)
 
-            an.sum_declaracion(1)
+            an.sum_te(1)
             j = i
             while j >= h and ls[j] < ls[j - h]:
                 an.sum_co(2)

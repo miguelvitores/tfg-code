@@ -36,14 +36,16 @@ def ordenacion_seleccion_analisis(lista, an):
     an.sum_declaracion(1)
     n = len(lista)
 
-    an.sum_declaracion(1)
+    an.sum_eu(1)            # espacio utilizado por minimo
+    an.sum_eu(1)            # espacio utilizado por j
+    an.sum_declaracion(1)   # espacio utilizado por i
     for i in range(n - 1):
         an.sum_co(1)
 
-        an.sum_declaracion(1)
+        an.sum_te(1)
         minimo = i
 
-        an.sum_declaracion(1)
+        an.sum_te(1)
         for j in range(i, n):
             an.sum_co(1)
 
