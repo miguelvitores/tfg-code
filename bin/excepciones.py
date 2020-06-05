@@ -21,3 +21,7 @@ class ValorBusquedaNoEncontrado(ValueError):
 
 class AnalisisNoInicializado(ValueError):
     pass
+
+
+class RangoNoValido(ValueError):
+    pass
