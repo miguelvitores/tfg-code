@@ -19,9 +19,9 @@ class ValorBusquedaNoEncontrado(ValueError):
     pass
 
 
-class AnalisisNoInicializado(ValueError):
+class RangoNoValido(ValueError):
     pass
 
 
-class RangoNoValido(ValueError):
+class NumeroRepeticionesNoValidas(ValueError):
     pass
