@@ -7,9 +7,9 @@ def ordenada(minimo, maximo):
     return [c for c in range(minimo, maximo)]
 
 
-def ordenada_equidistante(minimo, maximo, num, modif):
-    salto = (maximo - minimo) * modif / num
-    return [math.floor(c * salto) for c in range(num)]
+def ordenada_equidistante(minimo, maximo, num):
+    salto = (maximo - minimo) / num
+    return [math.floor(c * salto + minimo) for c in range(num)]
 
 
 def aleatoria(minimo, maximo, n):

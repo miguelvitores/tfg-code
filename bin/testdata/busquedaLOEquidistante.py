@@ -13,17 +13,20 @@ rangov_por_defecto = RangoVal(16)
 
 class BusquedaLOEquidistante(TestData):
 
-    def __init__(self, algoritmo: Busqueda, rangot=rangot_por_defecto, rangov=rangov_por_defecto):
-        super().__init__(algoritmo, rangot, rangov)
+    def __init__(self, algoritmo: Busqueda, rangot=rangot_por_defecto, rangov=rangov_por_defecto, repet=1):
+        super().__init__(algoritmo, rangot, rangov, repet)
 
     def analizar(self):
-        n = self.rangot.tam
         suma = self.rangot.tmin
-        while suma <= self.rangot.tmax:
+        while suma < self.rangot.tmax + 1:
             num = math.floor(suma)
             an = Analysis()
-            lista = cl.ordenada_equidistante(self.rangov.vmin, self.rangov.vmax, num, self.rangov.modif)
-            r = random.randint(0, num-1)
-            self.algoritmo.analizar(lista, an, lista[r])
+            lista = cl.ordenada_equidistante(self.rangov.vmin, self.rangov.vmax, num)
+
+            for i in range(self.repet):
+                r = random.randint(0, num-1)
+                self.algoritmo.analizar(lista, an, lista[r])
+
+            an.media(self.repet)
             self.resultados[num] = an
             suma += self.rangot.prec
