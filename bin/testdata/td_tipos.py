@@ -31,7 +31,7 @@ class TestDataLAleatoriaSR(TestData):
         super().__init__(algoritmo, rangot, rangov, repet)
 
     def crear_lista(self, n):
-        return cl.aleatoria_sin_repeticion(self.rangov.vmin, self.rangov.vmin + n)
+        return cl.aleatoria_sin_repeticion(self.rangov.vmin, self.rangov.emax, n)
 
 
 class TestDataLOACR(TestData):

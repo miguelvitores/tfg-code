@@ -7,7 +7,8 @@ class RangoTam:
         self.tmin = minimo
         self.tmax = maximo
         self.prec = min((maximo - minimo) / 2, precision)
-        self.tam = int(math.ceil((maximo - minimo + 1) / self.prec))
+        if maximo is not minimo:
+            self.tam = int(math.ceil((maximo - minimo + 1) / self.prec))
 
 
 class RangoVal:

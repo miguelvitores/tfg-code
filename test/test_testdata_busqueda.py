@@ -15,9 +15,9 @@ from bin.algoritmos.busq.busquedaexponencial import BusquedaExponencial
 from bin.algoritmos.busq.busquedafibonacci import BusquedaFibonacci
 
 rangos = (
-        (RangoTam(50, 10, 2.7), RangoVal(12, 4)),
-        (RangoTam(50, 10, 20), RangoVal(62, 13)),
-        (RangoTam(60, 1, 15), RangoVal(4, 0))
+        (RangoTam(50, 10, 2.7), RangoVal(12, 4, 5)),
+        (RangoTam(50, 10, 20), RangoVal(62, 13, 3)),
+        (RangoTam(60, 1, 15), RangoVal(4, 0, 7))
     )
 N = 20
 maxrepe = 8
@@ -667,3 +667,59 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
+
+
+class EntradasErroneas(unittest.TestCase):
+    rangos_erroneos = (
+        (RangoTam(5, 10, 2.7), RangoVal(12, 4, 5)),
+        (RangoTam(50, 10, -20), RangoVal(62, 13, 3)),
+        (RangoTam(1, 0, 15), RangoVal(4, 0, 7)),
+        (RangoTam(1, 1, 5), RangoVal(4, 0, 7)),
+        (RangoTam(50, 10, 5), RangoVal(5, 10, 3)),
+        (RangoTam(50, 10, 5), RangoVal(15, -1, 3))
+    )
+    num_rep = (
+        0,
+        -1,
+        65,
+        152,
+        -54
+    )
+    rangot_pd = RangoTam(32)
+    rangov_pd = RangoVal(16)
+
+    def test_busqueda_lineal_rangos_erroneos(self):
+        """El análisis de un testdata de búsqueda lineal debe fallar al recibir rangos erróneos"""
+        bl = BusquedaLineal()
+        for rt, rv in self.rangos_erroneos:
+            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bl, rt, rv)
+
+    def test_busqueda_binaria_rangos_erroneos(self):
+        """El análisis de un testdata de búsqueda binaria debe fallar al recibir rangos erróneos"""
+        bb = BusquedaBinaria()
+        for rt, rv in self.rangos_erroneos:
+            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bb, rt, rv)
+
+    def test_busqueda_salto_rangos_erroneos(self):
+        """El análisis de un testdata de búsqueda salto debe fallar al recibir rangos erróneos"""
+        bs = BusquedaSalto()
+        for rt, rv in self.rangos_erroneos:
+            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bs, rt, rv)
+
+    def test_busqueda_interpolacion_rangos_erroneos(self):
+        """El análisis de un testdata de búsqueda interpolacion debe fallar al recibir rangos erróneos"""
+        bi = BusquedaInterpolacion()
+        for rt, rv in self.rangos_erroneos:
+            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bi, rt, rv)
+
+    def test_busqueda_exponencial_rangos_erroneos(self):
+        """El análisis de un testdata de búsqueda exponencial debe fallar al recibir rangos erróneos"""
+        be = BusquedaExponencial()
+        for rt, rv in self.rangos_erroneos:
+            self.assertRaises(ex.RangoNoValido, TestDataLOASR, be, rt, rv)
+
+    def test_busqueda_fibonacci_rangos_erroneos(self):
+        """El análisis de un testdata de búsqueda fibonacci debe fallar al recibir rangos erróneos"""
+        bf = BusquedaFibonacci()
+        for rt, rv in self.rangos_erroneos:
+            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bf, rt, rv)

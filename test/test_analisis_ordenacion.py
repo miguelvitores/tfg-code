@@ -13,6 +13,7 @@ from bin.analysis import Analysis
 tam = 32
 min_num = 8
 max_num = 16
+max_espaciado = 4
 
 
 class ValoresConocidos(unittest.TestCase):
@@ -256,7 +257,7 @@ class ValoresConocidos(unittest.TestCase):
 
 
 class ListaAleatoriaSinRepeticion(unittest.TestCase):
-    la_sr = cl.aleatoria_sin_repeticion(min_num, min_num + tam)
+    la_sr = cl.aleatoria_sin_repeticion(min_num, max_espaciado, tam)
     lista_ordenada = sorted(list(la_sr))
 
     def test_analisis_ordenacion_seleccion(self):
