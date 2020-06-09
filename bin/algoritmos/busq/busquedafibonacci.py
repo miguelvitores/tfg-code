@@ -48,8 +48,8 @@ def busqueda_fibonacci(lista, vb):
         else:
             return i
 
-    if lista[0] == vb:
-        return 0
+    if lista[n - 1] == vb:
+        return n - 1
 
     raise ex.ValorBusquedaNoEncontrado("No se encontró el valor {0} con búsqueda fibonacci".format(vb))
 
@@ -98,7 +98,7 @@ def busqueda_fibonacci_analisis(lista, vb, an):
     an.sum_co(1)
 
     an.sum_co(1)
-    if lista[0] == vb:
-        return 0
+    if lista[n-1] == vb:
+        return n-1
 
     raise ex.ValorBusquedaNoEncontrado("No se encontró el valor {0} con búsqueda fibonacci".format(vb))
