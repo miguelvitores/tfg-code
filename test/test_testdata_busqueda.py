@@ -3,7 +3,8 @@ import random
 import bin.excepciones as ex
 import bin.testdata.operaciones_rangos as opr
 
-from bin.testdata.td_tipos import TestDataLOEquidistante, TestDataLAleatoria, TestDataLOACR, TestDataLOASR
+from bin.testdata.td_tipos import TestDataBusquedaLOEquidistante, TestDataBusquedaLAleatoria, \
+    TestDataBusquedaLOACR, TestDataBusquedaLOASR
 
 from bin.testdata.rango import RangoVal, RangoTam
 
@@ -36,7 +37,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         """El análisis de un testdata de búsqueda lineal con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bl = BusquedaLineal()
-        td = TestDataLOEquidistante(bl)
+        td = TestDataBusquedaLOEquidistante(bl)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -45,7 +46,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         """El análisis de un testdata de búsqueda binaria con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bb = BusquedaBinaria()
-        td = TestDataLOEquidistante(bb)
+        td = TestDataBusquedaLOEquidistante(bb)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -54,7 +55,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         """El análisis de un testdata de búsqueda salto con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bs = BusquedaSalto()
-        td = TestDataLOEquidistante(bs)
+        td = TestDataBusquedaLOEquidistante(bs)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -63,7 +64,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         """El análisis de un testdata de búsqueda interpolacion con los rangos por defecto debe devolver unos resultados
          con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bi = BusquedaInterpolacion()
-        td = TestDataLOEquidistante(bi)
+        td = TestDataBusquedaLOEquidistante(bi)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -72,7 +73,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         """El análisis de un testdata de búsqueda exponencial con los rangos por defecto debe devolver unos resultados
         con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         be = BusquedaExponencial()
-        td = TestDataLOEquidistante(be)
+        td = TestDataBusquedaLOEquidistante(be)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -81,7 +82,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         """El análisis de un testdata de búsqueda fibonacci con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bf = BusquedaFibonacci()
-        td = TestDataLOEquidistante(bf)
+        td = TestDataBusquedaLOEquidistante(bf)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -91,7 +92,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bl = BusquedaLineal()
         for rt, rv in rangos:
-            td = TestDataLOEquidistante(bl, rt, rv)
+            td = TestDataBusquedaLOEquidistante(bl, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -101,7 +102,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bb = BusquedaBinaria()
         for rt, rv in rangos:
-            td = TestDataLOEquidistante(bb, rt, rv)
+            td = TestDataBusquedaLOEquidistante(bb, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -111,7 +112,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bs = BusquedaSalto()
         for rt, rv in rangos:
-            td = TestDataLOEquidistante(bs, rt, rv)
+            td = TestDataBusquedaLOEquidistante(bs, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -121,7 +122,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bi = BusquedaInterpolacion()
         for rt, rv in rangos:
-            td = TestDataLOEquidistante(bi, rt, rv)
+            td = TestDataBusquedaLOEquidistante(bi, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -131,7 +132,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         be = BusquedaExponencial()
         for rt, rv in rangos:
-            td = TestDataLOEquidistante(be, rt, rv)
+            td = TestDataBusquedaLOEquidistante(be, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -141,7 +142,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bf = BusquedaFibonacci()
         for rt, rv in rangos:
-            td = TestDataLOEquidistante(bf, rt, rv)
+            td = TestDataBusquedaLOEquidistante(bf, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -155,7 +156,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
             rangov = opr.rango_val_aleatorio(maxvmin, maxvmax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOEquidistante(bl, rangot, rangov, nrep)
+            td = TestDataBusquedaLOEquidistante(bl, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -169,7 +170,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
             rangov = opr.rango_val_aleatorio(maxvmin, maxvmax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOEquidistante(bb, rangot, rangov, nrep)
+            td = TestDataBusquedaLOEquidistante(bb, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -183,7 +184,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
             rangov = opr.rango_val_aleatorio(maxvmin, maxvmax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOEquidistante(bs, rangot, rangov, nrep)
+            td = TestDataBusquedaLOEquidistante(bs, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -197,7 +198,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
             rangov = opr.rango_val_aleatorio(maxvmin, maxvmax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOEquidistante(bi, rangot, rangov, nrep)
+            td = TestDataBusquedaLOEquidistante(bi, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -211,7 +212,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
             rangov = opr.rango_val_aleatorio(maxvmin, maxvmax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOEquidistante(be, rangot, rangov, nrep)
+            td = TestDataBusquedaLOEquidistante(be, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -225,43 +226,7 @@ class ListaOrdenadaEquidistante(unittest.TestCase):
             rangov = opr.rango_val_aleatorio(maxvmin, maxvmax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOEquidistante(bf, rangot, rangov, nrep)
-            td.analizar()
-            self.assertGreater(len(td.resultados), 0)
-            self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
-
-
-class ListaAleatoria(unittest.TestCase):
-
-    def test_busqueda_lineal_rangos_por_defecto(self):
-        """El análisis de un testdata de búsqueda lineal con los rangos por defecto debe devolver unos resultados con
-        un tamaño mayor que 0 e iguales a la variable tam del rangot"""
-        bl = BusquedaLineal()
-        td = TestDataLAleatoria(bl)
-        td.analizar()
-        self.assertGreater(len(td.resultados), 0)
-        self.assertEqual(len(td.resultados), td.rangot.tam)
-
-    def test_busqueda_lineal_rangos_conocidos(self):
-        """El análisis de un testdata de búsqueda lineal con una serie de rangos conocidos debe devolver
-        unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
-        bl = BusquedaLineal()
-        for rt, rv in rangos:
-            td = TestDataLAleatoria(bl, rt, rv)
-            td.analizar()
-            self.assertGreater(len(td.resultados), 0)
-            self.assertEqual(len(td.resultados), td.rangot.tam)
-
-    def test_busqueda_lineal_rangos_aleatorios(self):
-        """El análisis de un testdata de búsqueda lineal con N rangos y repeticiones aleatorias debe devolver
-        unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
-        bl = BusquedaLineal()
-        for i in range(N):
-            rangot = opr.rango_tam_aleatorio(maxtmin, mintmax, maxtmax, maxprec)
-            rangov = opr.rango_val_aleatorio(maxvmin, maxvmax)
-            nrep = random.randint(1, maxrepe)
-
-            td = TestDataLAleatoria(bl, rangot, rangov, nrep)
+            td = TestDataBusquedaLOEquidistante(bf, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -273,7 +238,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda lineal con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bl = BusquedaLineal()
-        td = TestDataLOACR(bl)
+        td = TestDataBusquedaLOACR(bl)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -282,7 +247,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda binaria con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bb = BusquedaBinaria()
-        td = TestDataLOACR(bb)
+        td = TestDataBusquedaLOACR(bb)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -291,7 +256,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda salto con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bs = BusquedaSalto()
-        td = TestDataLOACR(bs)
+        td = TestDataBusquedaLOACR(bs)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -300,7 +265,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda interpolacion con los rangos por defecto debe devolver unos resultados
          con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bi = BusquedaInterpolacion()
-        td = TestDataLOACR(bi)
+        td = TestDataBusquedaLOACR(bi)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -309,7 +274,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda exponencial con los rangos por defecto debe devolver unos resultados
         con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         be = BusquedaExponencial()
-        td = TestDataLOACR(be)
+        td = TestDataBusquedaLOACR(be)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -318,7 +283,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda fibonacci con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bf = BusquedaFibonacci()
-        td = TestDataLOACR(bf)
+        td = TestDataBusquedaLOACR(bf)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -328,7 +293,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bl = BusquedaLineal()
         for rt, rv in rangos:
-            td = TestDataLOACR(bl, rt, rv)
+            td = TestDataBusquedaLOACR(bl, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -338,7 +303,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bb = BusquedaBinaria()
         for rt, rv in rangos:
-            td = TestDataLOACR(bb, rt, rv)
+            td = TestDataBusquedaLOACR(bb, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -348,7 +313,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bs = BusquedaSalto()
         for rt, rv in rangos:
-            td = TestDataLOACR(bs, rt, rv)
+            td = TestDataBusquedaLOACR(bs, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -358,7 +323,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bi = BusquedaInterpolacion()
         for rt, rv in rangos:
-            td = TestDataLOACR(bi, rt, rv)
+            td = TestDataBusquedaLOACR(bi, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -368,7 +333,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         be = BusquedaExponencial()
         for rt, rv in rangos:
-            td = TestDataLOACR(be, rt, rv)
+            td = TestDataBusquedaLOACR(be, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -378,7 +343,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bf = BusquedaFibonacci()
         for rt, rv in rangos:
-            td = TestDataLOACR(bf, rt, rv)
+            td = TestDataBusquedaLOACR(bf, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -392,7 +357,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOACR(bl, rangot, rangov, nrep)
+            td = TestDataBusquedaLOACR(bl, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -406,7 +371,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOACR(bb, rangot, rangov, nrep)
+            td = TestDataBusquedaLOACR(bb, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -420,7 +385,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOACR(bs, rangot, rangov, nrep)
+            td = TestDataBusquedaLOACR(bs, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -434,7 +399,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOACR(bi, rangot, rangov, nrep)
+            td = TestDataBusquedaLOACR(bi, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -448,7 +413,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOACR(be, rangot, rangov, nrep)
+            td = TestDataBusquedaLOACR(be, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -462,7 +427,7 @@ class ListaOrdenadaAleatoriaConRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOACR(bf, rangot, rangov, nrep)
+            td = TestDataBusquedaLOACR(bf, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -474,7 +439,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda lineal con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bl = BusquedaLineal()
-        td = TestDataLOASR(bl)
+        td = TestDataBusquedaLOASR(bl)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -483,7 +448,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda binaria con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bb = BusquedaBinaria()
-        td = TestDataLOASR(bb)
+        td = TestDataBusquedaLOASR(bb)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -492,7 +457,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda salto con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bs = BusquedaSalto()
-        td = TestDataLOASR(bs)
+        td = TestDataBusquedaLOASR(bs)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -501,7 +466,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda interpolacion con los rangos por defecto debe devolver unos resultados
          con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bi = BusquedaInterpolacion()
-        td = TestDataLOASR(bi)
+        td = TestDataBusquedaLOASR(bi)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -510,7 +475,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda exponencial con los rangos por defecto debe devolver unos resultados
         con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         be = BusquedaExponencial()
-        td = TestDataLOASR(be)
+        td = TestDataBusquedaLOASR(be)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -519,7 +484,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         """El análisis de un testdata de búsqueda fibonacci con los rangos por defecto debe devolver unos resultados con
         un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bf = BusquedaFibonacci()
-        td = TestDataLOASR(bf)
+        td = TestDataBusquedaLOASR(bf)
         td.analizar()
         self.assertGreater(len(td.resultados), 0)
         self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -529,7 +494,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bl = BusquedaLineal()
         for rt, rv in rangos:
-            td = TestDataLOASR(bl, rt, rv)
+            td = TestDataBusquedaLOASR(bl, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -539,7 +504,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bb = BusquedaBinaria()
         for rt, rv in rangos:
-            td = TestDataLOASR(bb, rt, rv)
+            td = TestDataBusquedaLOASR(bb, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -549,7 +514,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bs = BusquedaSalto()
         for rt, rv in rangos:
-            td = TestDataLOASR(bs, rt, rv)
+            td = TestDataBusquedaLOASR(bs, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -559,7 +524,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bi = BusquedaInterpolacion()
         for rt, rv in rangos:
-            td = TestDataLOASR(bi, rt, rv)
+            td = TestDataBusquedaLOASR(bi, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -569,7 +534,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         be = BusquedaExponencial()
         for rt, rv in rangos:
-            td = TestDataLOASR(be, rt, rv)
+            td = TestDataBusquedaLOASR(be, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -579,7 +544,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
         unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
         bf = BusquedaFibonacci()
         for rt, rv in rangos:
-            td = TestDataLOASR(bf, rt, rv)
+            td = TestDataBusquedaLOASR(bf, rt, rv)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertEqual(len(td.resultados), td.rangot.tam)
@@ -593,7 +558,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOASR(bl, rangot, rangov, nrep)
+            td = TestDataBusquedaLOASR(bl, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -607,7 +572,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOASR(bb, rangot, rangov, nrep)
+            td = TestDataBusquedaLOASR(bb, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -621,7 +586,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOASR(bs, rangot, rangov, nrep)
+            td = TestDataBusquedaLOASR(bs, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -635,7 +600,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOASR(bi, rangot, rangov, nrep)
+            td = TestDataBusquedaLOASR(bi, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -649,7 +614,7 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOASR(be, rangot, rangov, nrep)
+            td = TestDataBusquedaLOASR(be, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -663,7 +628,43 @@ class ListaOrdenadaAleatoriaSinRepeticion(unittest.TestCase):
             rangov = opr.rango_val_aleatorio_espaciado(maxvmin, maxvmax, maxemax)
             nrep = random.randint(1, maxrepe)
 
-            td = TestDataLOASR(bf, rangot, rangov, nrep)
+            td = TestDataBusquedaLOASR(bf, rangot, rangov, nrep)
+            td.analizar()
+            self.assertGreater(len(td.resultados), 0)
+            self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
+
+
+class ListaAleatoria(unittest.TestCase):
+
+    def test_busqueda_lineal_rangos_por_defecto(self):
+        """El análisis de un testdata de búsqueda lineal con los rangos por defecto debe devolver unos resultados con
+        un tamaño mayor que 0 e iguales a la variable tam del rangot"""
+        bl = BusquedaLineal()
+        td = TestDataBusquedaLAleatoria(bl)
+        td.analizar()
+        self.assertGreater(len(td.resultados), 0)
+        self.assertEqual(len(td.resultados), td.rangot.tam)
+
+    def test_busqueda_lineal_rangos_conocidos(self):
+        """El análisis de un testdata de búsqueda lineal con una serie de rangos conocidos debe devolver
+        unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
+        bl = BusquedaLineal()
+        for rt, rv in rangos:
+            td = TestDataBusquedaLAleatoria(bl, rt, rv)
+            td.analizar()
+            self.assertGreater(len(td.resultados), 0)
+            self.assertEqual(len(td.resultados), td.rangot.tam)
+
+    def test_busqueda_lineal_rangos_aleatorios(self):
+        """El análisis de un testdata de búsqueda lineal con N rangos y repeticiones aleatorias debe devolver
+        unos resultados con un tamaño mayor que 0 e iguales a la variable tam del rangot"""
+        bl = BusquedaLineal()
+        for i in range(N):
+            rangot = opr.rango_tam_aleatorio(maxtmin, mintmax, maxtmax, maxprec)
+            rangov = opr.rango_val_aleatorio(maxvmin, maxvmax)
+            nrep = random.randint(1, maxrepe)
+
+            td = TestDataBusquedaLAleatoria(bl, rangot, rangov, nrep)
             td.analizar()
             self.assertGreater(len(td.resultados), 0)
             self.assertTrue(td.rangot.tam <= len(td.resultados) <= td.rangot.tam + 1)
@@ -692,34 +693,34 @@ class EntradasErroneas(unittest.TestCase):
         """El análisis de un testdata de búsqueda lineal debe fallar al recibir rangos erróneos"""
         bl = BusquedaLineal()
         for rt, rv in self.rangos_erroneos:
-            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bl, rt, rv)
+            self.assertRaises(ex.RangoNoValido, TestDataBusquedaLOASR, bl, rt, rv)
 
     def test_busqueda_binaria_rangos_erroneos(self):
         """El análisis de un testdata de búsqueda binaria debe fallar al recibir rangos erróneos"""
         bb = BusquedaBinaria()
         for rt, rv in self.rangos_erroneos:
-            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bb, rt, rv)
+            self.assertRaises(ex.RangoNoValido, TestDataBusquedaLOASR, bb, rt, rv)
 
     def test_busqueda_salto_rangos_erroneos(self):
         """El análisis de un testdata de búsqueda salto debe fallar al recibir rangos erróneos"""
         bs = BusquedaSalto()
         for rt, rv in self.rangos_erroneos:
-            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bs, rt, rv)
+            self.assertRaises(ex.RangoNoValido, TestDataBusquedaLOASR, bs, rt, rv)
 
     def test_busqueda_interpolacion_rangos_erroneos(self):
         """El análisis de un testdata de búsqueda interpolacion debe fallar al recibir rangos erróneos"""
         bi = BusquedaInterpolacion()
         for rt, rv in self.rangos_erroneos:
-            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bi, rt, rv)
+            self.assertRaises(ex.RangoNoValido, TestDataBusquedaLOASR, bi, rt, rv)
 
     def test_busqueda_exponencial_rangos_erroneos(self):
         """El análisis de un testdata de búsqueda exponencial debe fallar al recibir rangos erróneos"""
         be = BusquedaExponencial()
         for rt, rv in self.rangos_erroneos:
-            self.assertRaises(ex.RangoNoValido, TestDataLOASR, be, rt, rv)
+            self.assertRaises(ex.RangoNoValido, TestDataBusquedaLOASR, be, rt, rv)
 
     def test_busqueda_fibonacci_rangos_erroneos(self):
         """El análisis de un testdata de búsqueda fibonacci debe fallar al recibir rangos erróneos"""
         bf = BusquedaFibonacci()
         for rt, rv in self.rangos_erroneos:
-            self.assertRaises(ex.RangoNoValido, TestDataLOASR, bf, rt, rv)
+            self.assertRaises(ex.RangoNoValido, TestDataBusquedaLOASR, bf, rt, rv)
