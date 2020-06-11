@@ -679,15 +679,6 @@ class EntradasErroneas(unittest.TestCase):
         (RangoTam(50, 10, 5), RangoVal(5, 10, 3)),
         (RangoTam(50, 10, 5), RangoVal(15, -1, 3))
     )
-    num_rep = (
-        0,
-        -1,
-        65,
-        152,
-        -54
-    )
-    rangot_pd = RangoTam(32)
-    rangov_pd = RangoVal(16)
 
     def test_busqueda_lineal_rangos_erroneos(self):
         """El análisis de un testdata de búsqueda lineal debe fallar al recibir rangos erróneos"""
