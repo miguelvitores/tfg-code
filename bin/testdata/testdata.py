@@ -66,7 +66,7 @@ class TestDataOrdenacion(TestData):
 
             for i in range(self.repet):
                 lista = self.crear_lista(n)
-                self.algoritmo.analizar(lista, an, lista[r])
+                self.algoritmo.analizar(lista, an)
 
             an.media(self.repet)
             self.resultados[n] = an
