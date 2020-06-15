@@ -39,6 +39,12 @@ class Analysis:
         return self.tiempo_ejecucion > 0 and self.espacio_utilizado > 0 and self.comparaciones == 0 \
                and self.intercambios > 0
 
+    def sumar(self, an):
+        self.tiempo_ejecucion += an.tiempo_ejecucion
+        self.espacio_utilizado += an.espacio_utilizado
+        self.comparaciones += an.comparaciones
+        self.intercambios += an.intercambios
+
     def media(self, n):
         self.tiempo_ejecucion = self.tiempo_ejecucion / n
         self.espacio_utilizado = self.espacio_utilizado / n
