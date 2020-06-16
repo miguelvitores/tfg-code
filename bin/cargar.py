@@ -3,7 +3,7 @@ import os
 
 tiposf = os.path.join("data", "tipos.pickle")
 busquedaf = os.path.join("data", "busqueda.pickle")
-ordenacionf = os.path.join("data", "ord.pickle")
+ordenacionf = os.path.join("data", "ordenacion.pickle")
 
 
 def carga(nombre_fichero):
@@ -12,8 +12,15 @@ def carga(nombre_fichero):
 
 
 def busqueda():
-    return [carga(tiposf), carga(busquedaf)]
+    return [carga(tiposf)[0], carga(busquedaf)]
 
 
 def ordenacion():
-    return [carga(tiposf), carga(ordenacionf)]
+    return [carga(tiposf)[1], carga(ordenacionf)]
+
+
+def alg_perm_pd():
+    return {
+        carga(tiposf)[0]: carga(busquedaf),
+        carga(tiposf)[1]: carga(ordenacionf)
+    }
