@@ -1,0 +1,178 @@
+<Label>:
+    font_name: "fonts/FiraSans-Medium"
+    color: (0, 0, 0, 1)
+
+<Button>:
+    font_name: "fonts/FiraSans-Medium"
+    background_normal: ''
+    background_down: ''
+    color: (0, 0, 0, 1)
+
+
+<MediumLabel@Label>:
+    font_name: "fonts/FiraSans-Medium"
+
+<BoldLabel@Label>:
+    font_name: "fonts/FiraSans-Bold"
+
+<ThinLabel@Label>:
+    font_name: "fonts/FiraSans-Thin"
+
+<MediumButton@Button>:
+    font_name: "fonts/FiraSans-Medium"
+    background_color: (1.0, 0.9412, 0.7922, 1)
+    on_press: self.background_color = (0.8, 0.7529, 0.6314, 1); self.color = (1, 1, 1, 1)
+    on_release: self.background_color = (1.0, 0.9412, 0.7922, 1); self.color = (0, 0, 0, 1)
+
+<BoldButton@Button>:
+    font_name: "fonts/FiraSans-Bold"
+    background_color: (1.0, 0.9412, 0.7922, 1)
+    on_press: self.background_color = (0.8, 0.7529, 0.6314, 1); self.color = (1, 1, 1, 1)
+    on_release: self.background_color = (1.0, 0.9412, 0.7922, 1); self.color = (0, 0, 0, 1)
+
+<ThinButton@Button>:
+    font_name: "fonts/FiraSans-Thin"
+    background_color: (1.0, 0.9412, 0.7922, 1)
+    on_press: self.background_color = (0.8, 0.7529, 0.6314, 1); self.color = (1, 1, 1, 1)
+    on_release: self.background_color = (1.0, 0.9412, 0.7922, 1); self.color = (0, 0, 0, 1)
+
+<SalirButton@Button>:
+    id: salir
+    text: "Salir"
+    font_name: "fonts/FiraSans-Bold"
+    background_color: (0.7725, 0.9882, 0.9412, 1)
+    on_press: self.background_color = (0.6157, 0.7882, 0.749, 1)
+
+<PrincipalLayout>:
+    cols: 2
+    botones: buttons_layout
+    cp: crear_proyecto
+    ep: editar_proyecto
+    uspinner: usuarios_spinner
+
+    BoxLayout:
+        orientation: 'horizontal'
+        cols: 3
+
+        canvas:
+            Color:
+                rgba: (0.0039, 0.4588, 0.3647, 1)
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_x: 0.25
+
+        BoxLayout:
+            orientation: 'vertical'
+            rows: 2
+            size_hint_x: 0.5
+            spacing: 50
+            padding: 0, 50
+
+            BoxLayout:
+                orientation: 'vertical'
+                id: buttons_layout
+                rows: 5
+                size_hint_y: 0.8
+                spacing: 30
+
+                MediumButton:
+                    text: "Abrir proyecto"
+                    size_hint_y: None
+                    height: 50
+                    on_release: root.soltar_dpdab(self)
+
+                MediumButton:
+                    text: "Comprimir proyecto"
+                    size_hint_y: None
+                    height: 50
+                    on_release: root.soltar_dpdcp(self)
+
+                MediumButton:
+                    id: crear_proyecto
+                    text: "Crear proyecto"
+                    size_hint_y: None
+                    height: 50
+                    on_release: root.cambiar_a_crear_proyecto(self)
+
+                MediumButton:
+                    id: editar_proyecto
+                    text: "Editar proyecto"
+                    size_hint_y: None
+                    height: 50
+                    on_release: root.soltar_dpdep(self)
+
+
+            SalirButton:
+                size_hint_y: 0.2
+                on_release: root.salir(self)
+
+        BoxLayout:
+            size_hint_x: 0.25
+
+    BoxLayout:
+        orientation: 'vertical'
+        rows: 3
+
+        canvas:
+            Color:
+                rgba: (0.4, 0.6078, 0.5647, 1)
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            orientation: 'horizontal'
+            cols: 2
+            size_hint_y: 0.1
+
+            BoxLayout:
+                size_hint_x: 0.7
+
+            SpinnerWidget:
+                id: usuarios_spinner
+                background_color: (0, 0, 0, 1)
+                color: (1, 1, 1, 1)
+                font_name: "fonts/FiraSans-Bold"
+                size_hint_y: None
+                height: 40
+                size_hint_x: 0.3
+                pos_hint: {'top': 1, 'right': 1}
+                values: ["Profesor", "Alumno"]
+                on_text: root.usuario_cambio(self.text)
+
+        BoxLayout:
+            size_hint_y: 0.3
+
+        BoxLayout:
+            size_hint_y: 0.6
+            orientation: 'vertical'
+            rows: 3
+            spacing: 30
+
+            ThinLabel:
+                text: "Icono aplicaci\u00f3n"
+
+            BoxLayout:
+                orientation: 'horizontal'
+                cols: 2
+
+                ThinLabel:
+                    text: "Nombre aplicaci\u00f3n"
+                ThinLabel:
+                    text: "Versi\u00f3n"
+            BoxLayout:
+                orientation: 'horizontal'
+                cols: 2
+
+                ThinLabel:
+                    text: "Configuraci\u00f3n"
+                ThinLabel:
+                    text: "Link github"
+
+
+<CrearProyectoScreen>:
+    BoxLayout:
+        background_color: (1, 1, 1, 1)
