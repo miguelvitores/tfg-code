@@ -3,9 +3,10 @@ import glob
 import os
 import bin.cargar as cargar
 
+fichero_ajustes = os.path.join("data", "ajustes.pickle")
+
 
 def ajustes(a):
-    fichero_ajustes = os.path.join("data", "ajustes.pickle")
     serializa(a, fichero_ajustes)
 
 

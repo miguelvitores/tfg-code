@@ -1,11 +1,15 @@
 <Label>:
-    font_name: "fonts/FiraSans-Medium"
+    font_name: "fonts/FiraSans-Regular"
     color: (0, 0, 0, 1)
 
 <Button>:
     font_name: "fonts/FiraSans-Medium"
     background_normal: ''
     background_down: ''
+    color: (0, 0, 0, 1)
+
+<TextInput>:
+    font_name: "fonts/FiraSans-LightItalic"
     color: (0, 0, 0, 1)
 
 
@@ -17,6 +21,17 @@
 
 <ThinLabel@Label>:
     font_name: "fonts/FiraSans-Thin"
+
+<MiniLabel@Label>:
+    font_size: 12
+
+<MiniThinLabel@Label>:
+    font_name: "fonts/FiraSans-Thin"
+    font_size: 12
+
+<MicroLabel@Label>:
+    font_name: "fonts/FiraSans-LightItalic"
+    font_size: 10
 
 <MediumButton@Button>:
     font_name: "fonts/FiraSans-Medium"
@@ -48,6 +63,7 @@
     botones: buttons_layout
     cp: crear_proyecto
     ep: editar_proyecto
+    elp: eliminar_proyecto
     uspinner: usuarios_spinner
 
     BoxLayout:
@@ -100,6 +116,13 @@
                 MediumButton:
                     id: editar_proyecto
                     text: "Editar proyecto"
+                    size_hint_y: None
+                    height: 50
+                    on_release: root.soltar_dpdep(self)
+
+                MediumButton:
+                    id: eliminar_proyecto
+                    text: "Eliminar proyecto"
                     size_hint_y: None
                     height: 50
                     on_release: root.soltar_dpdep(self)
@@ -173,6 +196,381 @@
                     text: "Link github"
 
 
-<CrearProyectoScreen>:
+<CrearProyectoLayout>:
+    cbbb: cbbb
+    cbbe: cbbe
+    cbbf: cbbf
+    cbbi: cbbi
+    cbbl: cbbl
+    cbbs: cbbs
+    cbob: cbob
+    cboi: cboi
+    cbom: cbom
+    cboq: cboq
+    cbor: cbor
+    cbos: cbos
+    cbosh: cbosh
+    nombrepr: nombre_proyecto
+
+    canvas:
+        Color:
+            rgba: (0.0039, 0.4588, 0.3647, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
     BoxLayout:
-        background_color: (1, 1, 1, 1)
+        orientation: 'horizontal'
+        cols: 2
+        size_hint_y: 0.1
+
+        SalirButton:
+            size_hint_x: 0.1
+            text: "Volver"
+            on_release:
+                self.background_color = (0.7725, 0.9882, 0.9412, 1)
+                root.volver_a_principal(self)
+
+        BoxLayout:
+            size_hint_x: 0.9
+
+    BoxLayout:
+        size_hint_y: 0.9
+        orientation: 'horizontal'
+        cols: 3
+
+
+        BoxLayout:
+            size_hint_x: 0.1
+
+        BoxLayout:
+            size_hint_x: 0.8
+            orientation: 'vertical'
+            rows: 2
+            padding: 10
+            spacing: 10
+
+            GridLayout:
+                size_hint_y: 0.9
+                rows: 2
+                cols: 2
+
+                canvas:
+                    Color:
+                        rgba: (1.0, 0.9412, 0.7922, 1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                    size_hint: 0.2, 0.2
+                    text: "Nombre"
+
+                BoxLayout:
+                    size_hint: 0.8, 0.2
+                    orientation: 'vertical'
+                    rows: 3
+
+                    BoxLayout:
+                        size_hint_y: 0.4
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        cols: 3
+                        size_hint_y: 0.2
+
+                        BoxLayout:
+                            size_hint_x: 0.15
+                        TextInput:
+                            id: nombre_proyecto
+                            size_hint_x: 0.7
+                            size_hint_y: None
+                            multiline: False
+                            focus: True
+                            write_tab: False
+                            hint_text: "Nombre del proyecto a crear"
+                            height: self.minimum_height
+                            on_text_validate: root.confirmar(self)
+                        BoxLayout:
+                            size_hint_x: 0.15
+
+                    BoxLayout:
+                        size_hint_y: 0.4
+
+                Label:
+                    size_hint: 0.2, 0.8
+                    text: "Algoritmos\npermitidos"
+                    line_height: 2
+                    multiline: True
+
+                GridLayout:
+                    size_hint: 0.8, 0.8
+                    cols: 2
+                    rows: 3
+                    spacing: 25
+
+                    MiniLabel:
+                        text: "Algoritmos de b\u00fasqueda"
+                        size_hint_y: 0.1
+
+                    MiniLabel:
+                        text: "Algoritmos de ordenaci\u00f3n"
+                        size_hint_y: 0.1
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        cols: 2
+                        size_hint_y: 0.05
+
+                        MiniThinLabel:
+                            text: "Seleccionar\ntodos"
+                            size_hint_x: 0.4
+                            halign: 'right'
+
+                        Switch:
+                            id: switch_sel_ab
+                            active: False
+                            on_active: root.seleccionar_todos_ab(self)
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        cols: 2
+                        size_hint_y: 0.05
+
+                        MiniThinLabel:
+                            text: "Seleccionar\ntodos"
+                            size_hint_x: 0.4
+                            halign: 'right'
+
+                        Switch:
+                            id: switch_sel_ao
+                            active: False
+                            on_active: root.seleccionar_todos_ao(self)
+
+                    BoxLayout:
+                        orientation: 'vertical'
+                        rows: 6
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "B. Binaria"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbbb
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "B. Exponencial"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbbe
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "B. Fibonacci"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbbf
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "B. Interpolaci\u00f3n"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbbi
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "B. Lineal"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbbl
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "B. Salto"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbbs
+                                active: False
+
+                    BoxLayout:
+                        orientation: 'vertical'
+                        rows: 7
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "O. Burbuja"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbob
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "O. Inserci\u00f3n"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cboi
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "O. Mergesort"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbom
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "O. Quicksort"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cboq
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "O. Radixsort"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbor
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "O. Selecci\u00f3n"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbos
+                                active: False
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            cols: 2
+
+                            MicroLabel:
+                                text_size: self.size
+                                valign: 'center'
+                                halign: 'right'
+                                text: "O. Shellsort"
+
+                            CheckBox:
+                                color: (0.0039, 0.4588, 0.3647, 1)
+                                id: cbosh
+                                active: False
+
+            BoxLayout:
+                orientation: 'horizontal'
+                cols: 3
+                size_hint_y: 0.1
+
+                BoxLayout:
+                    size_hint_x: 0.2
+                Button:
+                    size_hint_x: 0.6
+                    text: "Confirmar"
+                    background_color: (0.4, 0.6078, 0.5647, 1)
+                    on_press:
+                        self.background_color = (0.2706, 0.4118, 0.3804, 1)
+                        self.color = (1, 1, 1, 1)
+                    on_release:
+                        self.background_color = (0.4, 0.6078, 0.5647, 1)
+                        self.color = (0, 0, 0, 1)
+                        root.confirmar(self)
+                BoxLayout:
+                    size_hint_x: 0.2
+
+        BoxLayout:
+            size_hint_x: 0.1
+
