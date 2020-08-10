@@ -114,6 +114,7 @@ class PrincipalLayout(GridLayout):
     botones = ObjectProperty()
     cp = ObjectProperty()
     ep = ObjectProperty()
+    elp = ObjectProperty()
     uspinner = ObjectProperty()
 
     def __init__(self, **kwargs):
@@ -122,13 +123,17 @@ class PrincipalLayout(GridLayout):
         if isinstance(usuario, Profesor):
             self.botones.remove_widget(self.cp)
             self.botones.remove_widget(self.ep)
+            self.botones.remove_widget(self.elp)
         self.uspinner.text = usuario.tipo.capitalize()
         self.dpdep = DropdownProyectos()
+        self.dpdelp = DropdownProyectos()
         self.dpdcp = DropdownProyectos()
         self.dpdab = DropdownAbrirProyecto()
         self.dpdab.bind(on_select=self.llamada_dpdab)
         self.dpdcp.bind(on_select=self.llamada_dpdcp)
         self.dpdep.bind(on_select=self.llamada_dpdep)
+        self.dpdelp.bind(on_select=self.llamada_dpdelp)
+        self.proyecto_a_eliminar = None
 
     def llamada_dpdab(self, instancia, nombre):
         print(instancia, nombre)
@@ -137,7 +142,48 @@ class PrincipalLayout(GridLayout):
         print(instancia, nombre)
 
     def llamada_dpdep(self, instancia, nombre):
-        print(instancia, nombre)
+        pr = [p for p in proyectos if p.nombre is nombre][0]
+        sm.add_widget(EditarProyectoScreen(pr, name="editarp"))
+        sm.switch_to(sm.get_screen("editarp"))
+
+    def llamada_dpdelp(self, instancia, nombre):
+        self.proyecto_a_eliminar = [p for p in proyectos if p.nombre is nombre][0]
+        box = BoxLayout(orientation='horizontal', cols=2)
+        boton_si = Button(text='Eliminar', font_name="fonts/FiraSans-SemiBold",
+                          color=(0, 0, 0, 1), background_color=(0.5451, 0.9529, 0.4235, 1))
+        boton_no = Button(text='Cancelar', font_name="fonts/FiraSans-SemiBold",
+                          color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
+        box.add_widget(boton_si)
+        box.add_widget(boton_no)
+        popup = Popup(title='Desea eliminar el proyecto: {}?'.format(nombre), separator_color=(0.4, 0.6078, 0.5647, 1),
+                      title_color=(0.4, 0.6078, 0.5647, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=box, size_hint=(None, None), size=(300, 125))
+        popup.open()
+        boton_si.bind(on_press=self.presionar_eliminar_proyecto)
+        boton_no.bind(on_press=self.presionar_cancelar_eliminar_proyecto)
+        boton_si.bind(on_release=self.soltar_eliminar_proyecto)
+        boton_no.bind(on_release=self.soltar_cancelar_eliminar_proyecto)
+        boton_si.bind(on_release=popup.dismiss)
+        boton_no.bind(on_release=popup.dismiss)
+
+    def presionar_eliminar_proyecto(self, btn):
+        btn.background_color = (0.2667, 0.9059, 0.0745, 1)
+
+    def soltar_eliminar_proyecto(self, btn):
+        btn.background_color = (0.5451, 0.9529, 0.4235, 1)
+        proyectos.remove(self.proyecto_a_eliminar)
+        sm.switch_to(sm.get_screen("principal_help"))
+        sm.remove_widget(sm.get_screen("principal"))
+        sm.add_widget(PrincipalScreen(name="principal"))
+        sm.switch_to(sm.get_screen("principal"))
+
+    def presionar_cancelar_eliminar_proyecto(self, btn):
+        btn.background_color = (0.8824, 0.1451, 0.0784, 1)
+        btn.color = (1, 1, 1, 1)
+
+    def soltar_cancelar_eliminar_proyecto(self, btn):
+        btn.background_color = (0.949, 0.4667, 0.4196, 1)
+        btn.color = (0, 0, 0, 1)
 
     def soltar_dpdab(self, instancia):
         self.dpdab.open(instancia)
@@ -148,15 +194,20 @@ class PrincipalLayout(GridLayout):
     def soltar_dpdep(self, instancia):
         self.dpdep.open(instancia)
 
+    def soltar_dpdelp(self, instancia):
+        self.dpdelp.open(instancia)
+
     def usuario_cambio(self, usuario):
         if usuario == "Profesor":
             aj['ult_usuario'] = Profesor()
             self.botones.add_widget(self.cp)
             self.botones.add_widget(self.ep)
+            self.botones.add_widget(self.elp)
         elif usuario == "Alumno":
             aj['ult_usuario'] = Alumno()
             self.botones.remove_widget(self.cp)
             self.botones.remove_widget(self.ep)
+            self.botones.remove_widget(self.elp)
 
     def cambiar_a_crear_proyecto(self, instancia):
         sm.switch_to(sm.get_screen("crearp"))
@@ -307,13 +358,14 @@ class EditarProyectoLayout(CrearProyectoLayout):
     def __init__(self, proyecto, **kwargs):
         super().__init__(**kwargs)
         self.proyecto = proyecto
+        self.nombrepr.text = self.proyecto.nombre
         algs_elegidos = proyecto.algoritmos_permitidos
         if 'binaria' in algs_elegidos['búsqueda']:
             self.cbbb.active = True
         if 'exponencial' in algs_elegidos['búsqueda']:
             self.cbbe.active = True
-        if 'fibonacci' in algs_elegidos['cbbf']:
-            self.cbbb.active = True
+        if 'fibonacci' in algs_elegidos['búsqueda']:
+            self.cbbf.active = True
         if 'interpolación' in algs_elegidos['búsqueda']:
             self.cbbi.active = True
         if 'lineal' in algs_elegidos['búsqueda']:
@@ -355,9 +407,9 @@ class EditarProyectoLayout(CrearProyectoLayout):
             sm.add_widget(PrincipalScreen(name="principal"))
             sm.switch_to(sm.get_screen("principal"))
 
-            # Hacemos un refresh de la ventana de editar proyectos
+            # Eliminamos la ventana de editar proyectos
             sm.remove_widget(sm.get_screen("editarp"))
-            sm.add_widget(EditarProyectoScreen(name="editarp"))
+
 
 # Ventanas
 
@@ -375,9 +427,10 @@ class CrearProyectoScreen(Screen):
 
 
 class EditarProyectoScreen(Screen):
-    def __init__(self, **kw):
+    def __init__(self, proyecto, **kw):
         super().__init__(**kw)
-        self.add_widget(EditarProyectoLayout())
+        self.add_widget(EditarProyectoLayout(proyecto))
+
 
 # Aplicación
 
@@ -388,7 +441,7 @@ class AAlgApp(App):
     def build(self):
         sm.add_widget(PrincipalScreen(name="principal"))
         sm.add_widget(CrearProyectoScreen(name="crearp"))
-        sm.add_widget(EditarProyectoScreen(name="editarp"))
+        sm.add_widget(PrincipalScreen(name="principal_help"))
         return sm
 
 
