@@ -232,10 +232,10 @@ class CrearProyectoLayout(GridLayout):
     cbos = ObjectProperty()
     cbosh = ObjectProperty()
     nombrepr = ObjectProperty()
-    algs = {'busq': [], 'ord': []}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.algs = {'busq': [], 'ord': []}
         self.algs['busq'].append(self.cbbb)
         self.algs['busq'].append(self.cbbe)
         self.algs['busq'].append(self.cbbf)
@@ -266,6 +266,13 @@ class CrearProyectoLayout(GridLayout):
             for cb in self.algs[a]:
                 if cb.active is True:
                     return False
+        popup = Popup(title='Error creación proyecto', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                      title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=Label(text='Selecci\u00f3n de algoritmos no v\u00e1lida',
+                                    font_name="fonts/FiraSans-SemiBold",
+                                    color=(1, 1, 1, 1)
+                                    ), size_hint=(None, None), size=(250, 100))
+        popup.open()
         return True
 
     def get_algs_elegidos(self):
@@ -298,7 +305,7 @@ class CrearProyectoLayout(GridLayout):
             algs_elegidos['ordenación'].append('shellsort 3x+1')
         return algs_elegidos
 
-    def comprobar_form(self, pr):
+    def es_nombrepr_invalido(self, pr):
         if len(pr) == 0 or pr.isspace():
             print("Nombre no valido")
             popup = Popup(title='Error creación proyecto', separator_color=(0.9059, 0.3451, 0.3529, 1),
@@ -308,8 +315,11 @@ class CrearProyectoLayout(GridLayout):
                                         color=(1, 1, 1, 1)
                                         ), size_hint=(None, None), size=(250, 100))
             popup.open()
-            return False
-        elif pr in [p.nombre for p in proyectos]:
+            return True
+        return False
+
+    def es_nombrepr_repetido(self, pr):
+        if pr in [p.nombre for p in proyectos]:
             popup = Popup(title='Error creación proyecto', separator_color=(0.9059, 0.3451, 0.3529, 1),
                           title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
                           content=Label(text='Nombre de proyecto ya existente',
@@ -317,18 +327,13 @@ class CrearProyectoLayout(GridLayout):
                                         color=(1, 1, 1, 1)
                                         ), size_hint=(None, None), size=(250, 100))
             popup.open()
-            return False
-        elif self.todos_algs_desactivados():
-            popup = Popup(title='Error creación proyecto', separator_color=(0.9059, 0.3451, 0.3529, 1),
-                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
-                          content=Label(text='Selecci\u00f3n de algoritmos no v\u00e1lida',
-                                        font_name="fonts/FiraSans-SemiBold",
-                                        color=(1, 1, 1, 1)
-                                        ), size_hint=(None, None), size=(250, 100))
-            popup.open()
-            return False
-        else:
             return True
+        return False
+
+    def comprobar_form(self, pr):
+        if self.es_nombrepr_invalido(pr) or self.es_nombrepr_repetido(pr) or self.todos_algs_desactivados():
+            return False
+        return True
 
     def confirmar(self, inst):
         pr = self.nombrepr.text
@@ -386,6 +391,15 @@ class EditarProyectoLayout(CrearProyectoLayout):
             self.cbos.active = True
         if 'shellsort 3x+1' in algs_elegidos['ordenación']:
             self.cbosh.active = True
+
+    def volver_a_principal(self, inst):
+        sm.switch_to(sm.get_screen("principal"))
+        sm.remove_widget(sm.get_screen("editarp"))
+
+    def comprobar_form(self, pr):
+        if self.es_nombrepr_invalido(pr) or self.todos_algs_desactivados():
+            return False
+        return True
 
     def confirmar(self, inst):
         pr = self.nombrepr.text
