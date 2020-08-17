@@ -8,3 +8,6 @@
     
 <h3>Instalar Kivi</h3>
 https://kivy.org/doc/stable/installation/installation-windows.html
+
+Nombre aplicación: Palgama
+Origen: "Aplicación de escritorio para el análisis de algoritmos en python" en vasco -> "Python ALGoritmoak Aztertzeko Mahaigaineko Aplikazioa"

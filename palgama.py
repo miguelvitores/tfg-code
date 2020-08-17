@@ -4,7 +4,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.dropdown import DropDown
 from kivy.core.window import Window
-from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition, ScreenManagerException
 from bin.serializar import ajustes
 from bin.usuarios import Alumno, Profesor
 from bin.proyecto import Proyecto
@@ -16,6 +16,7 @@ from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 
 import bin.cargar as cargar
+import os
 
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 Config.set('graphics', 'resizable', 0)
@@ -65,7 +66,18 @@ class SpinnerWidget(Spinner):
         btn.color = (1, 1, 1, 1)
 
 
-class DropdownAbrirProyecto(DropDown):
+class DropdownComportamiento(DropDown):
+    def presionar_boton(self, btn):
+        btn.background_color = (0.2706, 0.4118, 0.3804, 1)
+        btn.color = (1, 1, 1, 1)
+
+    def soltar_boton(self, btn):
+        btn.background_color = (0.4, 0.6078, 0.5647, 1)
+        btn.color = (0, 0, 0, 1)
+        self.select(btn.text)
+
+
+class DropdownAbrirProyecto(DropdownComportamiento):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         for p in proyectos:
@@ -78,17 +90,8 @@ class DropdownAbrirProyecto(DropDown):
         btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
         self.add_widget(btn)
 
-    def presionar_boton(self, btn):
-        btn.background_color = (0.2706, 0.4118, 0.3804, 1)
-        btn.color = (1, 1, 1, 1)
 
-    def soltar_boton(self, btn):
-        btn.background_color = (0.4, 0.6078, 0.5647, 1)
-        btn.color = (0, 0, 0, 1)
-        self.select(btn.text)
-
-
-class DropdownProyectos(DropDown):
+class DropdownProyectos(DropdownComportamiento):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         for p in proyectos:
@@ -97,14 +100,45 @@ class DropdownProyectos(DropDown):
             btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
             self.add_widget(btn)
 
-    def presionar_boton(self, btn):
-        btn.background_color = (0.2706, 0.4118, 0.3804, 1)
-        btn.color = (1, 1, 1, 1)
 
-    def soltar_boton(self, btn):
-        btn.background_color = (0.4, 0.6078, 0.5647, 1)
-        btn.color = (0, 0, 0, 1)
-        self.select(btn.text)
+class DropdownExperimentos(DropdownComportamiento):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        btn = Button(text="Crear espacio de trabajo", size_hint_y=None, height=50, background_normal='',
+                     background_down='', background_color=(0.4, 0.6078, 0.5647, 1))
+        btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+        self.add_widget(btn)
+        btn = Button(text="Crear paquete", size_hint_y=None, height=50, background_normal='',
+                     background_down='',
+                     background_color=(0.4, 0.6078, 0.5647, 1))
+        btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+        self.add_widget(btn)
+        btn = Button(text="Crear experimento", size_hint_y=None, height=50, background_normal='',
+                     background_down='',
+                     background_color=(0.4, 0.6078, 0.5647, 1))
+        btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+        self.add_widget(btn)
+
+
+class DropdownGraficasInteractivas(DropdownComportamiento):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        btn = Button(text="Work in progress!", size_hint_y=None, height=50, background_normal='',
+                     background_down='', background_color=(0.4, 0.6078, 0.5647, 1))
+        btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+        self.add_widget(btn)
+
+
+class DropdownTeoriaAlgortimos(DropdownComportamiento):
+    def __init__(self, pr: Proyecto, **kwargs):
+        super().__init__(**kwargs)
+        self.algoritmos = pr.algoritmos_permitidos
+        for tipo in self.algoritmos:
+            for nombre in self.algoritmos[tipo]:
+                btn = Button(text="Teor\u00eda de {0} {1}".format(tipo, nombre), size_hint_y=None, height=50,
+                             background_normal='', background_down='', background_color=(0.4, 0.6078, 0.5647, 1))
+                btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+                self.add_widget(btn)
 
 
 # Layouts
@@ -136,15 +170,28 @@ class PrincipalLayout(GridLayout):
         self.proyecto_a_eliminar = None
 
     def llamada_dpdab(self, instancia, nombre):
-        print(instancia, nombre)
+        pr = [p for p in proyectos if p.nombre is nombre][0]
+        try:
+            screen = sm.get_screen("abrirp_{0}".format(nombre))
+        except ScreenManagerException:
+            screen = AbrirProyectoScreen(pr, name="abrirp_{0}".format(nombre))
+            sm.add_widget(screen)
+
+        Window.maximize()
+        sm.switch_to(screen)
 
     def llamada_dpdcp(self, instancia, nombre):
         print(instancia, nombre)
 
     def llamada_dpdep(self, instancia, nombre):
         pr = [p for p in proyectos if p.nombre is nombre][0]
-        sm.add_widget(EditarProyectoScreen(pr, name="editarp"))
-        sm.switch_to(sm.get_screen("editarp"))
+        try:
+            screen = sm.get_screen("editarp_{0}".format(nombre))
+        except ScreenManagerException:
+            screen = EditarProyectoScreen(pr, name="editarp_{0}".format(nombre))
+            sm.add_widget(screen)
+
+        sm.switch_to(screen)
 
     def llamada_dpdelp(self, instancia, nombre):
         self.proyecto_a_eliminar = [p for p in proyectos if p.nombre is nombre][0]
@@ -172,10 +219,19 @@ class PrincipalLayout(GridLayout):
     def soltar_eliminar_proyecto(self, btn):
         btn.background_color = (0.5451, 0.9529, 0.4235, 1)
         proyectos.remove(self.proyecto_a_eliminar)
+        self.eliminar_recursivamente(self.proyecto_a_eliminar.ruta)
         sm.switch_to(sm.get_screen("principal_help"))
         sm.remove_widget(sm.get_screen("principal"))
         sm.add_widget(PrincipalScreen(name="principal"))
         sm.switch_to(sm.get_screen("principal"))
+
+    def eliminar_recursivamente(self, ruta):
+        for f in os.walk(ruta, topdown=False):
+            for d in f[1]:
+                os.rmdir(os.path.join(f[0], d))
+            for file in f[2]:
+                os.remove(os.path.join(f[0], file))
+        os.rmdir(ruta)
 
     def presionar_cancelar_eliminar_proyecto(self, btn):
         btn.background_color = (0.8824, 0.1451, 0.0784, 1)
@@ -276,33 +332,33 @@ class CrearProyectoLayout(GridLayout):
         return True
 
     def get_algs_elegidos(self):
-        algs_elegidos = {'búsqueda': [], 'ordenación': []}
+        algs_elegidos = {'b\u00fasqueda': [], 'ordenaci\u00f3n': []}
         if self.cbbb.active:
-            algs_elegidos['búsqueda'].append('binaria')
+            algs_elegidos['b\u00fasqueda'].append('binaria')
         if self.cbbe.active:
-            algs_elegidos['búsqueda'].append('exponencial')
+            algs_elegidos['b\u00fasqueda'].append('exponencial')
         if self.cbbf.active:
-            algs_elegidos['búsqueda'].append('fibonacci')
+            algs_elegidos['b\u00fasqueda'].append('fibonacci')
         if self.cbbi.active:
-            algs_elegidos['búsqueda'].append('interpolación')
+            algs_elegidos['b\u00fasqueda'].append('interpolación')
         if self.cbbl.active:
-            algs_elegidos['búsqueda'].append('lineal')
+            algs_elegidos['b\u00fasqueda'].append('lineal')
         if self.cbbs.active:
-            algs_elegidos['búsqueda'].append('salto')
+            algs_elegidos['b\u00fasqueda'].append('salto')
         if self.cbob.active:
-            algs_elegidos['ordenación'].append('burbuja')
+            algs_elegidos['ordenaci\u00f3n'].append('burbuja')
         if self.cboi.active:
-            algs_elegidos['ordenación'].append('inserción')
+            algs_elegidos['ordenaci\u00f3n'].append('inserción')
         if self.cbom.active:
-            algs_elegidos['ordenación'].append('mergesort')
+            algs_elegidos['ordenaci\u00f3n'].append('mergesort')
         if self.cboq.active:
-            algs_elegidos['ordenación'].append('3way quicksort')
+            algs_elegidos['ordenaci\u00f3n'].append('3way quicksort')
         if self.cbor.active:
-            algs_elegidos['ordenación'].append('radixsort')
+            algs_elegidos['ordenaci\u00f3n'].append('radixsort')
         if self.cbos.active:
-            algs_elegidos['ordenación'].append('selección')
+            algs_elegidos['ordenaci\u00f3n'].append('selección')
         if self.cbosh.active:
-            algs_elegidos['ordenación'].append('shellsort 3x+1')
+            algs_elegidos['ordenaci\u00f3n'].append('shellsort 3x+1')
         return algs_elegidos
 
     def es_nombrepr_invalido(self, pr):
@@ -319,7 +375,7 @@ class CrearProyectoLayout(GridLayout):
         return False
 
     def es_nombrepr_repetido(self, pr):
-        if pr in [p.nombre for p in proyectos]:
+        if pr.casefold() in [p.nombre.casefold() for p in proyectos]:
             popup = Popup(title='Error creación proyecto', separator_color=(0.9059, 0.3451, 0.3529, 1),
                           title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
                           content=Label(text='Nombre de proyecto ya existente',
@@ -340,6 +396,7 @@ class CrearProyectoLayout(GridLayout):
         if self.comprobar_form(pr):
             algs_seleccionados = self.get_algs_elegidos()
             p = Proyecto(pr, algs_seleccionados)
+            os.mkdir(p.ruta)
             proyectos.insert(0, p)
             popup = Popup(title='Proyecto creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
                           title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
@@ -394,7 +451,6 @@ class EditarProyectoLayout(CrearProyectoLayout):
 
     def volver_a_principal(self, inst):
         sm.switch_to(sm.get_screen("principal"))
-        sm.remove_widget(sm.get_screen("editarp"))
 
     def comprobar_form(self, pr):
         if self.es_nombrepr_invalido(pr) or self.todos_algs_desactivados():
@@ -407,6 +463,7 @@ class EditarProyectoLayout(CrearProyectoLayout):
             algs_seleccionados = self.get_algs_elegidos()
             p = Proyecto(pr, algs_seleccionados)
             proyectos.remove(self.proyecto)
+            os.rename(self.proyecto.ruta, p.ruta)
             proyectos.insert(0, p)
             popup = Popup(title='Proyecto editado', separator_color=(0.5451, 0.9529, 0.4235, 1),
                           title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
@@ -423,6 +480,36 @@ class EditarProyectoLayout(CrearProyectoLayout):
 
             # Eliminamos la ventana de editar proyectos
             sm.remove_widget(sm.get_screen("editarp"))
+
+
+class AbrirProyectoLayout(BoxLayout):
+    label_nombrepr = ObjectProperty()
+    filechooser = ObjectProperty()
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(**kwargs)
+        self.proyecto = proyecto
+        self.label_nombrepr.text = self.proyecto.nombre
+        self.filechooser.rootpath = os.getcwd()
+        self.dpdex = DropdownExperimentos()
+        self.dpdgi = DropdownGraficasInteractivas()
+        self.dpdta = DropdownTeoriaAlgortimos(self.proyecto)
+
+    def soltar_dpdex(self, instancia):
+        self.dpdex.open(instancia)
+
+    def soltar_dpdgi(self, instancia):
+        self.dpdgi.open(instancia)
+
+    def soltar_dpdta(self, instancia):
+        self.dpdta.open(instancia)
+
+    def volver_a_principal(self, inst):
+        Window.restore()
+        sm.switch_to(sm.get_screen("principal"))
+
+    def get_nombre_proyecto(self):
+        return self.proyecto.nombre
 
 
 # Ventanas
@@ -446,11 +533,17 @@ class EditarProyectoScreen(Screen):
         self.add_widget(EditarProyectoLayout(proyecto))
 
 
+class AbrirProyectoScreen(Screen):
+    def __init__(self, proyecto, **kw):
+        super().__init__(**kw)
+        self.add_widget(AbrirProyectoLayout(proyecto))
+
+
 # Aplicación
 
 
 class AAlgApp(App):
-    title = "Análisis de Algoritmos"
+    title = "Palgama"
 
     def build(self):
         sm.add_widget(PrincipalScreen(name="principal"))
