@@ -11,14 +11,14 @@ class Proyecto:
         self.nombre = nombre
         self.ruta = os.path.join(os.getcwd(), "data", "proyectos", self.nombre)
         self.algoritmos_permitidos = alg_perm
-        self.espacios_trabajo = []
+        self.espacios_trabajo = {}
         self.ult_modif = time.asctime(time.localtime(time.time()))
 
-    def add_espacio_trabajo(self, et):
-        self.espacios_trabajo.append(et)
+    def add_espacio_trabajo(self, nombre_et):
+        self.espacios_trabajo[nombre_et] = {}
 
-    def eliminar_espacio_trabajo(self, et):
-        self.espacios_trabajo.remove(e)
+    def eliminar_espacio_trabajo(self, nombre_et):
+        self.espacios_trabajo.pop(nombre_et, None)
 
     def editar_nombre(self, nuevo_nombre):
         self.nombre = nuevo_nombre

@@ -63,6 +63,10 @@
     background_color: (0.7725, 0.9882, 0.9412, 1)
     on_press: self.background_color = (0.6157, 0.7882, 0.749, 1)
 
+<SplitterStrip>:
+    background_normal: ''
+    background_color: (1.0, 0.9412, 0.7922, 1)
+
 <PrincipalLayout>:
     cols: 2
     botones: buttons_layout
@@ -585,6 +589,7 @@
     rows: 2
     label_nombrepr: label_nombrepr
     filechooser: filechooser
+    panel_graficas: panel_graficas
 
     BoxLayout:
         orientation: 'horizontal'
@@ -626,33 +631,157 @@
         cols: 2
         size_hint_y: 0.9
 
+        Splitter:
+            size_hint_x: 0.25
+            sizable_from: 'right'
+            min_size: root.width / 8
+            max_size: root.width / 2
+
+            BoxLayout:
+                orientation: 'vertical'
+                rows: 2
+
+                MediumLabel:
+                    id: label_nombrepr
+                    font_size: 20
+                    size_hint_y: 0.046
+                    color: (1, 1, 1, 1)
+
+                    canvas.before:
+                        Color:
+                            rgba: (0.0039, 0.4588, 0.3647, 1)
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+
+                FileChooserListView:
+                    id: filechooser
+                    size_hint_y: 0.954
+
+        TabbedPanel:
+            id: panel_graficas
+            size_hint_x: 0.75
+            background_color: (0.7725, 0.9882, 0.9412, 1)
+            do_default_tab: False
+
+            canvas.before:
+                Color:
+                    rgba: (0.4, 0.6078, 0.5647, 1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+
+
+<CrearEspacioTrabajoLayout>:
+    nombre_et: nombre_et
+
+    canvas:
+        Color:
+            rgba: (0.0039, 0.4588, 0.3647, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'horizontal'
+        cols: 2
+        size_hint_y: 0.1
+
+        SalirButton:
+            size_hint_x: 0.1
+            text: "Volver"
+            on_release:
+                self.background_color = (0.7725, 0.9882, 0.9412, 1)
+                root.volver_a_principal(self)
+
         BoxLayout:
+            size_hint_x: 0.9
+
+    BoxLayout:
+        size_hint_y: 0.9
+        orientation: 'horizontal'
+        cols: 3
+
+
+        BoxLayout:
+            size_hint_x: 0.1
+
+        BoxLayout:
+            size_hint_x: 0.8
             orientation: 'vertical'
             rows: 2
-            size_hint_x: 0.25
+            padding: 10
+            spacing: 10
 
-            MediumLabel:
-                id: label_nombrepr
-                font_size: 20
-                size_hint_y: 0.05
-
-                canvas.before:
-                    Color:
-                        rgba: (0.0039, 0.4588, 0.3647, 1)
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
-
-            FileChooserListView:
-                id: filechooser
+            BoxLayout:
                 size_hint_y: 0.9
+                orientation: 'horizontal'
+                cols: 2
 
-        PageLayout:
-            size_hint_x: 0.75
+                canvas:
+                    Color:
+                        rgba: (1.0, 0.9412, 0.7922, 1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
-            Button:
-                text: "Page 1"
-            Button:
-                text: "Page 2"
-            Button:
-                text: "Page 3"
+                MediumLabel:
+                    size_hint_x: 0.2
+                    text: "Nombre"
+
+                BoxLayout:
+                    size_hint_x: 0.8
+                    orientation: 'vertical'
+                    rows: 3
+
+                    BoxLayout:
+                        size_hint_y: 0.4
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        cols: 3
+                        size_hint_y: 0.2
+
+                        BoxLayout:
+                            size_hint_x: 0.15
+                        TextInput:
+                            id: nombre_et
+                            size_hint_x: 0.7
+                            size_hint_y: None
+                            multiline: False
+                            focus: True
+                            write_tab: False
+                            hint_text: "Nombre del espacio de trabajo a crear"
+                            height: self.minimum_height
+                            on_text_validate: root.confirmar(self)
+                        BoxLayout:
+                            size_hint_x: 0.15
+
+                    BoxLayout:
+                        size_hint_y: 0.4
+
+
+
+            BoxLayout:
+                orientation: 'horizontal'
+                cols: 3
+                size_hint_y: 0.1
+
+                BoxLayout:
+                    size_hint_x: 0.2
+                Button:
+                    size_hint_x: 0.6
+                    text: "Confirmar"
+                    background_color: (0.4, 0.6078, 0.5647, 1)
+                    on_press:
+                        self.background_color = (0.2706, 0.4118, 0.3804, 1)
+                        self.color = (1, 1, 1, 1)
+                    on_release:
+                        self.background_color = (0.4, 0.6078, 0.5647, 1)
+                        self.color = (0, 0, 0, 1)
+                        root.confirmar(self)
+                BoxLayout:
+                    size_hint_x: 0.2
+
+        BoxLayout:
+            size_hint_x: 0.1

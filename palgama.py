@@ -101,23 +101,155 @@ class DropdownProyectos(DropdownComportamiento):
             self.add_widget(btn)
 
 
-class DropdownExperimentos(DropdownComportamiento):
-    def __init__(self, **kwargs):
+class DropdownExperimentos(DropDown):
+    def __init__(self, proyecto, **kwargs):
         super().__init__(**kwargs)
-        btn = Button(text="Crear espacio de trabajo", size_hint_y=None, height=50, background_normal='',
+        self.proyecto = proyecto
+        btn = Button(text="Añadir", size_hint_y=None, height=50, background_normal='',
                      background_down='', background_color=(0.4, 0.6078, 0.5647, 1))
         btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+        btn.bind(on_release=self.soltar_dpdad)
         self.add_widget(btn)
-        btn = Button(text="Crear paquete", size_hint_y=None, height=50, background_normal='',
-                     background_down='',
-                     background_color=(0.4, 0.6078, 0.5647, 1))
+        btn = Button(text="Eliminar", size_hint_y=None, height=50, background_normal='',
+                     background_down='', background_color=(0.4, 0.6078, 0.5647, 1))
         btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+        btn.bind(on_release=self.soltar_dpdel)
         self.add_widget(btn)
-        btn = Button(text="Crear experimento", size_hint_y=None, height=50, background_normal='',
-                     background_down='',
-                     background_color=(0.4, 0.6078, 0.5647, 1))
-        btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
-        self.add_widget(btn)
+
+        self.dpdad = DropdownExperimentosOpciones(self.proyecto)
+        self.dpdel = DropdownExperimentosOpciones(self.proyecto)
+        self.dpdad.bind(on_select=self.llamada_dpdad)
+        self.dpdel.bind(on_select=self.llamada_dpdel)
+        self.dismiss_on_select = False
+
+    @staticmethod
+    def presionar_boton(btn):
+        btn.background_color = (0.2706, 0.4118, 0.3804, 1)
+        btn.color = (1, 1, 1, 1)
+
+    @staticmethod
+    def soltar_boton(btn):
+        btn.background_color = (0.4, 0.6078, 0.5647, 1)
+        btn.color = (0, 0, 0, 1)
+
+    def llamada_dpdad(self, inst, nombre: str):
+        if nombre == "Espacio de trabajo":
+            self.dpdad.add_espt()
+        elif nombre == "Paquete":
+            self.dpdad.add_paq()
+        elif nombre == "Experimento":
+            self.dpdad.add_exp()
+
+    def llamada_dpdel(self, inst, nombre: str):
+        nombrecf = nombre.casefold()
+        if nombrecf == "Espacio de trabajo":
+            self.dpdad.el_espt()
+        elif nombrecf == "Paquete":
+            self.dpdad.el_paq()
+        elif nombrecf == "Experimento":
+            self.dpdad.el_exp()
+
+    def soltar_dpdad(self, instancia):
+        self.dpdad.open(instancia)
+
+    def soltar_dpdel(self, instancia):
+        self.dpdel.open(instancia)
+
+
+class DropdownExperimentosOpciones(DropDown):
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(**kwargs)
+        self.proyecto = proyecto
+        self.espt = Button(text="Espacio de trabajo", size_hint_y=None, height=50, background_normal='',
+                           background_down='', background_color=(0.7725, 0.9882, 0.9412, 1))
+        self.espt.bind(on_press=self.presionar_boton, on_release=self.soltar_espt)
+        self.add_widget(self.espt)
+        self.paq = Button(text="Paquete", size_hint_y=None, height=50, background_normal='',
+                          background_down='',
+                          background_color=(0.7725, 0.9882, 0.9412, 1))
+        self.paq.bind(on_press=self.presionar_boton, on_release=self.soltar_paq)
+        self.add_widget(self.paq)
+        self.exp = Button(text="Experimento", size_hint_y=None, height=50, background_normal='',
+                          background_down='',
+                          background_color=(0.7725, 0.9882, 0.9412, 1))
+        self.exp.bind(on_press=self.presionar_boton, on_release=self.soltar_exp)
+        self.add_widget(self.exp)
+
+    @staticmethod
+    def presionar_boton(btn):
+        btn.background_color = (0.6157, 0.7882, 0.749, 1)
+
+    def soltar_espt(self, btn):
+        self.espt.background_color = (0.7725, 0.9882, 0.9412, 1)
+        self.select(self.espt.text)
+
+    def soltar_paq(self, btn):
+        self.paq.background_color = (0.7725, 0.9882, 0.9412, 1)
+        self.select(self.paq.text)
+
+    def soltar_exp(self, btn):
+        self.exp.background_color = (0.7725, 0.9882, 0.9412, 1)
+        self.select(self.exp.text)
+
+    def add_espt(self):
+        print("add_espt")
+        try:
+            screen = sm.get_screen("add_espt_{0}".format(self.proyecto))
+        except ScreenManagerException:
+            screen = CrearEspacioTrabajoScreen(self.proyecto, name="add_espt_{0}".format(self.proyecto))
+            sm.add_widget(screen)
+        Window.restore()
+        sm.switch_to(screen)
+
+    def add_paq(self):
+        print("add_paq")
+        try:
+            screen = sm.get_screen("add_paq_{0}".format(self.proyecto))
+        except ScreenManagerException:
+            screen = CrearPaqueteScreen(self.proyecto, name="add_paq_{0}".format(self.proyecto))
+            sm.add_widget(screen)
+        Window.restore()
+        sm.switch_to(screen)
+
+    def add_exp(self):
+        print("add_exp")
+        try:
+            screen = sm.get_screen("add_exp_{0}".format(self.proyecto))
+        except ScreenManagerException:
+            screen = CrearExperimentoScreen(self.proyecto, name="add_exp_{0}".format(self.proyecto))
+            sm.add_widget(screen)
+        Window.restore()
+        sm.switch_to(screen)
+
+    def el_espt(self):
+        print("el_espt")
+        try:
+            screen = sm.get_screen("el_espt_{0}".format(self.proyecto))
+        except ScreenManagerException:
+            screen = EliminarEspacioTrabajoScreen(self.proyecto, name="el_espt_{0}".format(self.proyecto))
+            sm.add_widget(screen)
+        Window.restore()
+        sm.switch_to(screen)
+
+    def el_paq(self):
+        print("el_paq")
+        try:
+            screen = sm.get_screen("el_paq_{0}".format(self.proyecto))
+        except ScreenManagerException:
+            screen = EliminarPaqueteScreen(self.proyecto, name="el_paq_{0}".format(self.proyecto))
+            sm.add_widget(screen)
+        Window.restore()
+        sm.switch_to(screen)
+
+    def el_exp(self):
+        print("el_exp")
+        try:
+            screen = sm.get_screen("el_exp_{0}".format(self.proyecto))
+        except ScreenManagerException:
+            screen = EliminarExperimentoScreen(self.proyecto, name="el_exp_{0}".format(self.proyecto))
+            sm.add_widget(screen)
+        Window.restore()
+        sm.switch_to(screen)
 
 
 class DropdownGraficasInteractivas(DropdownComportamiento):
@@ -485,13 +617,14 @@ class EditarProyectoLayout(CrearProyectoLayout):
 class AbrirProyectoLayout(BoxLayout):
     label_nombrepr = ObjectProperty()
     filechooser = ObjectProperty()
+    panel_graficas = ObjectProperty()
 
     def __init__(self, proyecto, **kwargs):
         super().__init__(**kwargs)
         self.proyecto = proyecto
         self.label_nombrepr.text = self.proyecto.nombre
-        self.filechooser.rootpath = os.getcwd()
-        self.dpdex = DropdownExperimentos()
+        self.filechooser.rootpath = proyecto.ruta
+        self.dpdex = DropdownExperimentos(self.proyecto)
         self.dpdgi = DropdownGraficasInteractivas()
         self.dpdta = DropdownTeoriaAlgortimos(self.proyecto)
 
@@ -510,6 +643,50 @@ class AbrirProyectoLayout(BoxLayout):
 
     def get_nombre_proyecto(self):
         return self.proyecto.nombre
+
+
+class CrearEspacioTrabajoLayout(BoxLayout):
+    rows = 2
+    nombre_et = ObjectProperty()
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(**kwargs)
+        self.proyecto = proyecto
+
+
+class CrearPaqueteLayout(BoxLayout):
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(**kwargs)
+        self.proyecto = proyecto
+
+
+class CrearExperimentoLayout(BoxLayout):
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(**kwargs)
+        self.proyecto = proyecto
+
+
+class EliminarEspacioTrabajoLayout(BoxLayout):
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(**kwargs)
+        self.proyecto = proyecto
+
+
+class EliminarPaqueteLayout(BoxLayout):
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(**kwargs)
+        self.proyecto = proyecto
+
+
+class EliminarExperimentoLayout(BoxLayout):
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(**kwargs)
+        self.proyecto = proyecto
 
 
 # Ventanas
@@ -537,6 +714,42 @@ class AbrirProyectoScreen(Screen):
     def __init__(self, proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(AbrirProyectoLayout(proyecto))
+
+
+class CrearEspacioTrabajoScreen(Screen):
+    def __init__(self, proyecto, **kw):
+        super().__init__(**kw)
+        self.add_widget(CrearEspacioTrabajoLayout(proyecto))
+
+
+class CrearPaqueteScreen(Screen):
+    def __init__(self, proyecto, **kw):
+        super().__init__(**kw)
+        self.add_widget(CrearPaqueteLayout(proyecto))
+
+
+class CrearExperimentoScreen(Screen):
+    def __init__(self, proyecto, **kw):
+        super().__init__(**kw)
+        self.add_widget(CrearExperimentoLayout(proyecto))
+
+
+class EliminarEspacioTrabajoScreen(Screen):
+    def __init__(self, proyecto, **kw):
+        super().__init__(**kw)
+        self.add_widget(EliminarEspacioTrabajoLayout(proyecto))
+
+
+class EliminarPaqueteScreen(Screen):
+    def __init__(self, proyecto, **kw):
+        super().__init__(**kw)
+        self.add_widget(EliminarPaqueteLayout(proyecto))
+
+
+class EliminarExperimentoScreen(Screen):
+    def __init__(self, proyecto, **kw):
+        super().__init__(**kw)
+        self.add_widget(EliminarExperimentoLayout(proyecto))
 
 
 # Aplicación
