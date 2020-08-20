@@ -31,6 +31,8 @@ class SpinnerOpciones(SpinnerOption):
         self.background_normal = ''
         self.background_down = ''
         self.background_color = (0.7725, 0.9882, 0.9412, 1)
+        self.text_size = (200, None)
+        self.halign = 'center'
         self.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
 
     def presionar_boton(self, btn):
@@ -93,6 +95,38 @@ class AbrirPrHijosComportamiento:
         sm.add_widget(AbrirProyectoScreen(self.proyecto, name=abrirpr))
         Window.maximize()
         sm.switch_to(sm.get_screen(abrirpr))
+
+        # Eliminamos todas las pantallas sensibles a cambios del proyecto si existen
+        try:
+            screen = sm.get_screen("add_espt_{0}".format(self.proyecto.nombre))
+            sm.remove_widget(screen)
+        except ScreenManagerException:
+            pass
+        try:
+            screen = sm.get_screen("add_paq_{0}".format(self.proyecto.nombre))
+            sm.remove_widget(screen)
+        except ScreenManagerException:
+            pass
+        try:
+            screen = sm.get_screen("add_exp_{0}".format(self.proyecto.nombre))
+            sm.remove_widget(screen)
+        except ScreenManagerException:
+            pass
+        try:
+            screen = sm.get_screen("el_espt_{0}".format(self.proyecto.nombre))
+            sm.remove_widget(screen)
+        except ScreenManagerException:
+            pass
+        try:
+            screen = sm.get_screen("el_paq_{0}".format(self.proyecto.nombre))
+            sm.remove_widget(screen)
+        except ScreenManagerException:
+            pass
+        try:
+            screen = sm.get_screen("el_exp_{0}".format(self.proyecto.nombre))
+            sm.remove_widget(screen)
+        except ScreenManagerException:
+            pass
 
 
 class DropdownAbrirProyecto(DropdownComportamiento):
@@ -676,7 +710,7 @@ class CrearEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
         self.proyecto = proyecto
 
     def comprobar_form(self, et):
-        if self.es_nombrepr_invalido(et) or self.es_nombrepr_repetido(et):
+        if self.es_nombre_invalido(et) or self.es_nombre_repetido(et):
             return False
         return True
 
@@ -695,11 +729,8 @@ class CrearEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
 
             self.recargar_proyecto()
 
-            # Eliminamos la ventana de crear espacios de trabajo
-            sm.remove_widget(sm.get_screen("add_espt_{0}".format(self.proyecto.nombre)))
-
     @staticmethod
-    def es_nombrepr_invalido(et):
+    def es_nombre_invalido(et):
         if len(et) == 0 or et.isspace():
             popup = Popup(title='Error creación espacio de trabajo', separator_color=(0.9059, 0.3451, 0.3529, 1),
                           title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
@@ -711,7 +742,7 @@ class CrearEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
             return True
         return False
 
-    def es_nombrepr_repetido(self, et):
+    def es_nombre_repetido(self, et):
         if et.casefold() in [e.casefold() for e in self.proyecto.espacios_trabajo.keys()]:
             popup = Popup(title='Error creación espacio de trabajo', separator_color=(0.9059, 0.3451, 0.3529, 1),
                           title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
@@ -726,10 +757,63 @@ class CrearEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
 
 class CrearPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
     rows = 2
+    et_spinner = ObjectProperty()
+    nombre_paq = ObjectProperty()
 
     def __init__(self, proyecto, **kwargs):
         super().__init__(proyecto=proyecto, **kwargs)
         self.proyecto = proyecto
+        self.et_spinner.values = self.proyecto.espacios_trabajo.keys()
+        if len(self.et_spinner.values) == 0:
+            self.et_spinner.text = "No hay ningún espacio de trabajo"
+        else:
+            self.et_spinner.text = self.et_spinner.values[0]
+
+    def comprobar_form(self, et, paq):
+        if self.es_nombre_invalido(paq) or self.es_nombre_repetido(et, paq):
+            return False
+        return True
+
+    def confirmar(self, inst):
+        et = self.et_spinner.text
+        paq = self.nombre_paq.text
+        if self.comprobar_form(et, paq):
+            self.proyecto.crear_paquete(et, paq)
+
+            popup = Popup(title='Espacio de trabajo creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                          title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Espacio de trabajo creado correctamente',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+
+            self.recargar_proyecto()
+
+    @staticmethod
+    def es_nombre_invalido(paq):
+        if len(paq) == 0 or paq.isspace():
+            popup = Popup(title='Error creación paquete', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Nombre del paquete no v\u00e1lido',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+            return True
+        return False
+
+    def es_nombre_repetido(self, et, paq):
+        if paq.casefold() in [p.casefold() for p in self.proyecto.espacios_trabajo[et].keys()]:
+            popup = Popup(title='Error creación paquete', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Nombre de paquete ya existente',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+            return True
+        return False
 
 
 class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
@@ -792,8 +876,6 @@ class EliminarEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
         btn.background_color = (0.5451, 0.9529, 0.4235, 1)
         self.proyecto.eliminar_espacio_trabajo(self.et_spinner.text)
         self.recargar_proyecto()
-        # Eliminamos la ventana de crear espacios de trabajo
-        sm.remove_widget(sm.get_screen("el_espt_{0}".format(self.proyecto.nombre)))
 
     @staticmethod
     def presionar_cancelar_eliminar_et(btn):

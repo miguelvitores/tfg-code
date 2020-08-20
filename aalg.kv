@@ -894,7 +894,9 @@
                                 font_name: "fonts/FiraSans-Bold"
                                 size_hint_y: None
                                 height: 40
-                                size_hint_x: 0.3
+                                size_hint_x: 0.7
+                                text_size: (200, None)
+                                halign: 'center'
 
                             BoxLayout:
                                 size_hint_x: 0.15
@@ -984,7 +986,7 @@
 
                 BoldLabel:
                     size_hint_y: 0.2
-                    text: "Eliminar espacio de trabajo"
+                    text: "Crear nuevo paquete"
                     font_size: 22
 
                 GridLayout:
@@ -1019,8 +1021,9 @@
                                 font_name: "fonts/FiraSans-Bold"
                                 size_hint_y: None
                                 height: 40
-                                size_hint_x: 0.3
-                                on_text: root.et_cambio(self.text)
+                                size_hint_x: 0.7
+                                text_size: (200, None)
+                                halign: 'center'
 
                             BoxLayout:
                                 size_hint_x: 0.15
