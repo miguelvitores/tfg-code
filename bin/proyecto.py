@@ -1,4 +1,5 @@
 import bin.cargar as c
+from bin.serializar import eliminar_recursivamente
 import time
 import os
 
@@ -14,17 +15,36 @@ class Proyecto:
         self.espacios_trabajo = {}
         self.ult_modif = time.asctime(time.localtime(time.time()))
 
-    def add_espacio_trabajo(self, nombre_et):
-        self.espacios_trabajo[nombre_et] = {}
-
-    def eliminar_espacio_trabajo(self, nombre_et):
-        self.espacios_trabajo.pop(nombre_et, None)
-
-    def editar_nombre(self, nuevo_nombre):
-        self.nombre = nuevo_nombre
-        self.ruta = os.path.join(carpeta_proyectos, self.nombre)
+    def editar_proyecto(self, nombre, alg_perm):
+        self._editar_nombre(nombre)
+        self._editar_alg_perm(alg_perm)
         self.ult_modif = time.asctime(time.localtime(time.time()))
 
-    def editar_alg_perm(self, alg_perm):
+    def _editar_nombre(self, nuevo_nombre):
+        self.nombre = nuevo_nombre
+        ruta_anterior = self.ruta
+        self.ruta = os.path.join(carpeta_proyectos, self.nombre)
+        os.rename(ruta_anterior, self.ruta)
+
+    def _editar_alg_perm(self, alg_perm):
         self.algoritmos_permitidos = alg_perm
+
+    def crear_espacio_trabajo(self, nombre):
+        self.espacios_trabajo[nombre] = {}
+        os.mkdir(os.path.join(self.ruta, nombre))
+        self.ult_modif = time.asctime(time.localtime(time.time()))
+
+    def eliminar_espacio_trabajo(self, nombre):
+        self.espacios_trabajo.pop(nombre, None)
+        eliminar_recursivamente(os.path.join(self.ruta, nombre))
+        self.ult_modif = time.asctime(time.localtime(time.time()))
+
+    def crear_paquete(self, nombre_et, nombre_p):
+        self.espacios_trabajo[nombre_et][nombre_p] = []
+        os.mkdir(os.path.join(self.ruta, nombre_et, nombre_p))
+        self.ult_modif = time.asctime(time.localtime(time.time()))
+
+    def eliminar_paquete(self, nombre_et, nombre_p):
+        self.espacios_trabajo[nombre_et].pop(nombre_p, None)
+        eliminar_recursivamente(os.path.join(self.ruta, nombre_et, nombre_p))
         self.ult_modif = time.asctime(time.localtime(time.time()))

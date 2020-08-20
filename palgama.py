@@ -5,7 +5,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.dropdown import DropDown
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition, ScreenManagerException
-from bin.serializar import ajustes
+from bin.serializar import ajustes, eliminar_recursivamente
 from bin.usuarios import Alumno, Profesor
 from bin.proyecto import Proyecto
 from kivy.config import Config
@@ -77,6 +77,24 @@ class DropdownComportamiento(DropDown):
         self.select(btn.text)
 
 
+class AbrirPrHijosComportamiento:
+
+    def __init__(self, proyecto: Proyecto):
+        self.proyecto = proyecto
+
+    def volver_abrirpr(self, inst):
+        Window.maximize()
+        sm.switch_to(sm.get_screen("abrirpr_{0}".format(self.proyecto.nombre)))
+
+    def recargar_proyecto(self):
+        # Hacemos un refresh de la ventana del proyecto actual
+        abrirpr = "abrirpr_{0}".format(self.proyecto.nombre)
+        sm.remove_widget(sm.get_screen(name=abrirpr))
+        sm.add_widget(AbrirProyectoScreen(self.proyecto, name=abrirpr))
+        Window.maximize()
+        sm.switch_to(sm.get_screen(abrirpr))
+
+
 class DropdownAbrirProyecto(DropdownComportamiento):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -133,6 +151,7 @@ class DropdownExperimentos(DropDown):
         btn.color = (0, 0, 0, 1)
 
     def llamada_dpdad(self, inst, nombre: str):
+        self.dismiss()
         if nombre == "Espacio de trabajo":
             self.dpdad.add_espt()
         elif nombre == "Paquete":
@@ -141,13 +160,13 @@ class DropdownExperimentos(DropDown):
             self.dpdad.add_exp()
 
     def llamada_dpdel(self, inst, nombre: str):
-        nombrecf = nombre.casefold()
-        if nombrecf == "Espacio de trabajo":
-            self.dpdad.el_espt()
-        elif nombrecf == "Paquete":
-            self.dpdad.el_paq()
-        elif nombrecf == "Experimento":
-            self.dpdad.el_exp()
+        self.dismiss()
+        if nombre == "Espacio de trabajo":
+            self.dpdel.el_espt()
+        elif nombre == "Paquete":
+            self.dpdel.el_paq()
+        elif nombre == "Experimento":
+            self.dpdel.el_exp()
 
     def soltar_dpdad(self, instancia):
         self.dpdad.open(instancia)
@@ -192,61 +211,55 @@ class DropdownExperimentosOpciones(DropDown):
         self.select(self.exp.text)
 
     def add_espt(self):
-        print("add_espt")
         try:
-            screen = sm.get_screen("add_espt_{0}".format(self.proyecto))
+            screen = sm.get_screen("add_espt_{0}".format(self.proyecto.nombre))
         except ScreenManagerException:
-            screen = CrearEspacioTrabajoScreen(self.proyecto, name="add_espt_{0}".format(self.proyecto))
+            screen = CrearEspacioTrabajoScreen(self.proyecto, name="add_espt_{0}".format(self.proyecto.nombre))
             sm.add_widget(screen)
         Window.restore()
         sm.switch_to(screen)
 
     def add_paq(self):
-        print("add_paq")
         try:
-            screen = sm.get_screen("add_paq_{0}".format(self.proyecto))
+            screen = sm.get_screen("add_paq_{0}".format(self.proyecto.nombre))
         except ScreenManagerException:
-            screen = CrearPaqueteScreen(self.proyecto, name="add_paq_{0}".format(self.proyecto))
+            screen = CrearPaqueteScreen(self.proyecto, name="add_paq_{0}".format(self.proyecto.nombre))
             sm.add_widget(screen)
         Window.restore()
         sm.switch_to(screen)
 
     def add_exp(self):
-        print("add_exp")
         try:
-            screen = sm.get_screen("add_exp_{0}".format(self.proyecto))
+            screen = sm.get_screen("add_exp_{0}".format(self.proyecto.nombre))
         except ScreenManagerException:
-            screen = CrearExperimentoScreen(self.proyecto, name="add_exp_{0}".format(self.proyecto))
+            screen = CrearExperimentoScreen(self.proyecto, name="add_exp_{0}".format(self.proyecto.nombre))
             sm.add_widget(screen)
         Window.restore()
         sm.switch_to(screen)
 
     def el_espt(self):
-        print("el_espt")
         try:
-            screen = sm.get_screen("el_espt_{0}".format(self.proyecto))
+            screen = sm.get_screen("el_espt_{0}".format(self.proyecto.nombre))
         except ScreenManagerException:
-            screen = EliminarEspacioTrabajoScreen(self.proyecto, name="el_espt_{0}".format(self.proyecto))
+            screen = EliminarEspacioTrabajoScreen(self.proyecto, name="el_espt_{0}".format(self.proyecto.nombre))
             sm.add_widget(screen)
         Window.restore()
         sm.switch_to(screen)
 
     def el_paq(self):
-        print("el_paq")
         try:
-            screen = sm.get_screen("el_paq_{0}".format(self.proyecto))
+            screen = sm.get_screen("el_paq_{0}".format(self.proyecto.nombre))
         except ScreenManagerException:
-            screen = EliminarPaqueteScreen(self.proyecto, name="el_paq_{0}".format(self.proyecto))
+            screen = EliminarPaqueteScreen(self.proyecto, name="el_paq_{0}".format(self.proyecto.nombre))
             sm.add_widget(screen)
         Window.restore()
         sm.switch_to(screen)
 
     def el_exp(self):
-        print("el_exp")
         try:
-            screen = sm.get_screen("el_exp_{0}".format(self.proyecto))
+            screen = sm.get_screen("el_exp_{0}".format(self.proyecto.nombre))
         except ScreenManagerException:
-            screen = EliminarExperimentoScreen(self.proyecto, name="el_exp_{0}".format(self.proyecto))
+            screen = EliminarExperimentoScreen(self.proyecto, name="el_exp_{0}".format(self.proyecto.nombre))
             sm.add_widget(screen)
         Window.restore()
         sm.switch_to(screen)
@@ -265,6 +278,8 @@ class DropdownTeoriaAlgortimos(DropdownComportamiento):
     def __init__(self, pr: Proyecto, **kwargs):
         super().__init__(**kwargs)
         self.algoritmos = pr.algoritmos_permitidos
+        self.auto_width = False
+        self.width = 300
         for tipo in self.algoritmos:
             for nombre in self.algoritmos[tipo]:
                 btn = Button(text="Teor\u00eda de {0} {1}".format(tipo, nombre), size_hint_y=None, height=50,
@@ -301,26 +316,31 @@ class PrincipalLayout(GridLayout):
         self.dpdelp.bind(on_select=self.llamada_dpdelp)
         self.proyecto_a_eliminar = None
 
-    def llamada_dpdab(self, instancia, nombre):
+    @staticmethod
+    def llamada_dpdab(instancia, nombre):
         pr = [p for p in proyectos if p.nombre is nombre][0]
         try:
-            screen = sm.get_screen("abrirp_{0}".format(nombre))
+            screen = sm.get_screen("abrirpr_{0}".format(nombre))
         except ScreenManagerException:
-            screen = AbrirProyectoScreen(pr, name="abrirp_{0}".format(nombre))
+            screen = AbrirProyectoScreen(pr, name="abrirpr_{0}".format(nombre))
             sm.add_widget(screen)
 
+        proyectos.remove(pr)
+        proyectos.insert(0, pr)
         Window.maximize()
         sm.switch_to(screen)
 
-    def llamada_dpdcp(self, instancia, nombre):
+    @staticmethod
+    def llamada_dpdcp(instancia, nombre):
         print(instancia, nombre)
 
-    def llamada_dpdep(self, instancia, nombre):
+    @staticmethod
+    def llamada_dpdep(instancia, nombre):
         pr = [p for p in proyectos if p.nombre is nombre][0]
         try:
-            screen = sm.get_screen("editarp_{0}".format(nombre))
+            screen = sm.get_screen("editarpr_{0}".format(nombre))
         except ScreenManagerException:
-            screen = EditarProyectoScreen(pr, name="editarp_{0}".format(nombre))
+            screen = EditarProyectoScreen(pr, name="editarpr_{0}".format(nombre))
             sm.add_widget(screen)
 
         sm.switch_to(screen)
@@ -345,31 +365,26 @@ class PrincipalLayout(GridLayout):
         boton_si.bind(on_release=popup.dismiss)
         boton_no.bind(on_release=popup.dismiss)
 
-    def presionar_eliminar_proyecto(self, btn):
+    @staticmethod
+    def presionar_eliminar_proyecto(btn):
         btn.background_color = (0.2667, 0.9059, 0.0745, 1)
 
     def soltar_eliminar_proyecto(self, btn):
         btn.background_color = (0.5451, 0.9529, 0.4235, 1)
         proyectos.remove(self.proyecto_a_eliminar)
-        self.eliminar_recursivamente(self.proyecto_a_eliminar.ruta)
+        eliminar_recursivamente(self.proyecto_a_eliminar.ruta)
         sm.switch_to(sm.get_screen("principal_help"))
         sm.remove_widget(sm.get_screen("principal"))
         sm.add_widget(PrincipalScreen(name="principal"))
         sm.switch_to(sm.get_screen("principal"))
 
-    def eliminar_recursivamente(self, ruta):
-        for f in os.walk(ruta, topdown=False):
-            for d in f[1]:
-                os.rmdir(os.path.join(f[0], d))
-            for file in f[2]:
-                os.remove(os.path.join(f[0], file))
-        os.rmdir(ruta)
-
-    def presionar_cancelar_eliminar_proyecto(self, btn):
+    @staticmethod
+    def presionar_cancelar_eliminar_proyecto(btn):
         btn.background_color = (0.8824, 0.1451, 0.0784, 1)
         btn.color = (1, 1, 1, 1)
 
-    def soltar_cancelar_eliminar_proyecto(self, btn):
+    @staticmethod
+    def soltar_cancelar_eliminar_proyecto(btn):
         btn.background_color = (0.949, 0.4667, 0.4196, 1)
         btn.color = (0, 0, 0, 1)
 
@@ -397,10 +412,12 @@ class PrincipalLayout(GridLayout):
             self.botones.remove_widget(self.ep)
             self.botones.remove_widget(self.elp)
 
-    def cambiar_a_crear_proyecto(self, instancia):
+    @staticmethod
+    def cambiar_a_crear_proyecto(instancia):
         sm.switch_to(sm.get_screen("crearp"))
 
-    def salir(self, instancia):
+    @staticmethod
+    def salir(instancia):
         Window.close()
 
 
@@ -493,9 +510,9 @@ class CrearProyectoLayout(GridLayout):
             algs_elegidos['ordenaci\u00f3n'].append('shellsort 3x+1')
         return algs_elegidos
 
-    def es_nombrepr_invalido(self, pr):
+    @staticmethod
+    def es_nombrepr_invalido(pr):
         if len(pr) == 0 or pr.isspace():
-            print("Nombre no valido")
             popup = Popup(title='Error creación proyecto', separator_color=(0.9059, 0.3451, 0.3529, 1),
                           title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
                           content=Label(text='Nombre del proyecto no v\u00e1lido',
@@ -506,7 +523,8 @@ class CrearProyectoLayout(GridLayout):
             return True
         return False
 
-    def es_nombrepr_repetido(self, pr):
+    @staticmethod
+    def es_nombrepr_repetido(pr):
         if pr.casefold() in [p.nombre.casefold() for p in proyectos]:
             popup = Popup(title='Error creación proyecto', separator_color=(0.9059, 0.3451, 0.3529, 1),
                           title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
@@ -592,11 +610,11 @@ class EditarProyectoLayout(CrearProyectoLayout):
     def confirmar(self, inst):
         pr = self.nombrepr.text
         if self.comprobar_form(pr):
+            nombre_anterior = self.proyecto.nombre
             algs_seleccionados = self.get_algs_elegidos()
-            p = Proyecto(pr, algs_seleccionados)
+            self.proyecto.editar_proyecto(pr, algs_seleccionados)
             proyectos.remove(self.proyecto)
-            os.rename(self.proyecto.ruta, p.ruta)
-            proyectos.insert(0, p)
+            proyectos.insert(0, self.proyecto)
             popup = Popup(title='Proyecto editado', separator_color=(0.5451, 0.9529, 0.4235, 1),
                           title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
                           content=Label(text='Proyecto editado correctamente',
@@ -611,7 +629,7 @@ class EditarProyectoLayout(CrearProyectoLayout):
             sm.switch_to(sm.get_screen("principal"))
 
             # Eliminamos la ventana de editar proyectos
-            sm.remove_widget(sm.get_screen("editarp"))
+            sm.remove_widget(sm.get_screen("editarpr_{0}".format(nombre_anterior)))
 
 
 class AbrirProyectoLayout(BoxLayout):
@@ -637,55 +655,170 @@ class AbrirProyectoLayout(BoxLayout):
     def soltar_dpdta(self, instancia):
         self.dpdta.open(instancia)
 
-    def volver_a_principal(self, inst):
+    @staticmethod
+    def volver_a_principal(inst):
         Window.restore()
+        # Hacemos un refresh de la ventana principal
+        sm.remove_widget(sm.get_screen("principal"))
+        sm.add_widget(PrincipalScreen(name="principal"))
         sm.switch_to(sm.get_screen("principal"))
 
     def get_nombre_proyecto(self):
         return self.proyecto.nombre
 
 
-class CrearEspacioTrabajoLayout(BoxLayout):
+class CrearEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
     rows = 2
     nombre_et = ObjectProperty()
 
     def __init__(self, proyecto, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(proyecto=proyecto, **kwargs)
+        self.proyecto = proyecto
+
+    def comprobar_form(self, et):
+        if self.es_nombrepr_invalido(et) or self.es_nombrepr_repetido(et):
+            return False
+        return True
+
+    def confirmar(self, inst):
+        et = self.nombre_et.text
+        if self.comprobar_form(et):
+            self.proyecto.crear_espacio_trabajo(et)
+
+            popup = Popup(title='Espacio de trabajo creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                          title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Espacio de trabajo creado correctamente',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+
+            self.recargar_proyecto()
+
+            # Eliminamos la ventana de crear espacios de trabajo
+            sm.remove_widget(sm.get_screen("add_espt_{0}".format(self.proyecto.nombre)))
+
+    @staticmethod
+    def es_nombrepr_invalido(et):
+        if len(et) == 0 or et.isspace():
+            popup = Popup(title='Error creación espacio de trabajo', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Nombre del espacio de trabajo no v\u00e1lido',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+            return True
+        return False
+
+    def es_nombrepr_repetido(self, et):
+        if et.casefold() in [e.casefold() for e in self.proyecto.espacios_trabajo.keys()]:
+            popup = Popup(title='Error creación espacio de trabajo', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Nombre de espacio de trabajo ya existente',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+            return True
+        return False
+
+
+class CrearPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
+    rows = 2
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(proyecto=proyecto, **kwargs)
         self.proyecto = proyecto
 
 
-class CrearPaqueteLayout(BoxLayout):
+class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
+    rows = 2
 
     def __init__(self, proyecto, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(proyecto=proyecto, **kwargs)
         self.proyecto = proyecto
 
 
-class CrearExperimentoLayout(BoxLayout):
+class EliminarEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
+    rows = 2
+    et_spinner = ObjectProperty()
+    nombre_paq = ObjectProperty()
 
     def __init__(self, proyecto, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(proyecto=proyecto, **kwargs)
+        self.proyecto = proyecto
+        self.et_spinner.values = self.proyecto.espacios_trabajo.keys()
+        if len(self.et_spinner.values) == 0:
+            self.et_spinner.text = "No hay ningún espacio de trabajo"
+        else:
+            self.et_spinner.text = self.et_spinner.values[0]
+
+    def confirmar(self, inst):
+        if len(self.et_spinner.values) == 0:
+            popup = Popup(title='Error eliminando espacio de trabajo', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Ningún espacio de trabajo v\u00e1lido',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+        else:
+            box = BoxLayout(orientation='horizontal', cols=2)
+            boton_si = Button(text='Eliminar', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.5451, 0.9529, 0.4235, 1))
+            boton_no = Button(text='Cancelar', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
+            box.add_widget(boton_si)
+            box.add_widget(boton_no)
+            popup = Popup(title='Desea eliminar el espacio de trabajo: {}?'.format(self.et_spinner.text),
+                          separator_color=(0.4, 0.6078, 0.5647, 1), title_color=(0.4, 0.6078, 0.5647, 1),
+                          title_font="fonts/FiraSans-ThinItalic", content=box, size_hint=(None, None), size=(350, 125))
+            popup.open()
+            boton_si.bind(on_press=self.presionar_eliminar_et)
+            boton_no.bind(on_press=self.presionar_cancelar_eliminar_et)
+            boton_si.bind(on_release=self.soltar_eliminar_et)
+            boton_no.bind(on_release=self.soltar_cancelar_eliminar_et)
+            boton_si.bind(on_release=popup.dismiss)
+            boton_no.bind(on_release=popup.dismiss)
+
+        popup.open()
+
+    @staticmethod
+    def presionar_eliminar_et(btn):
+        btn.background_color = (0.2667, 0.9059, 0.0745, 1)
+
+    def soltar_eliminar_et(self, btn):
+        btn.background_color = (0.5451, 0.9529, 0.4235, 1)
+        self.proyecto.eliminar_espacio_trabajo(self.et_spinner.text)
+        self.recargar_proyecto()
+        # Eliminamos la ventana de crear espacios de trabajo
+        sm.remove_widget(sm.get_screen("el_espt_{0}".format(self.proyecto.nombre)))
+
+    @staticmethod
+    def presionar_cancelar_eliminar_et(btn):
+        btn.background_color = (0.8824, 0.1451, 0.0784, 1)
+        btn.color = (1, 1, 1, 1)
+
+    @staticmethod
+    def soltar_cancelar_eliminar_et(btn):
+        btn.background_color = (0.949, 0.4667, 0.4196, 1)
+        btn.color = (0, 0, 0, 1)
+
+
+class EliminarPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
+    rows = 2
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(proyecto=proyecto, **kwargs)
         self.proyecto = proyecto
 
 
-class EliminarEspacioTrabajoLayout(BoxLayout):
+class EliminarExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
+    rows = 2
 
     def __init__(self, proyecto, **kwargs):
-        super().__init__(**kwargs)
-        self.proyecto = proyecto
-
-
-class EliminarPaqueteLayout(BoxLayout):
-
-    def __init__(self, proyecto, **kwargs):
-        super().__init__(**kwargs)
-        self.proyecto = proyecto
-
-
-class EliminarExperimentoLayout(BoxLayout):
-
-    def __init__(self, proyecto, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(proyecto=proyecto, **kwargs)
         self.proyecto = proyecto
 
 
@@ -705,49 +838,49 @@ class CrearProyectoScreen(Screen):
 
 
 class EditarProyectoScreen(Screen):
-    def __init__(self, proyecto, **kw):
+    def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(EditarProyectoLayout(proyecto))
 
 
 class AbrirProyectoScreen(Screen):
-    def __init__(self, proyecto, **kw):
+    def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(AbrirProyectoLayout(proyecto))
 
 
 class CrearEspacioTrabajoScreen(Screen):
-    def __init__(self, proyecto, **kw):
+    def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(CrearEspacioTrabajoLayout(proyecto))
 
 
 class CrearPaqueteScreen(Screen):
-    def __init__(self, proyecto, **kw):
+    def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(CrearPaqueteLayout(proyecto))
 
 
 class CrearExperimentoScreen(Screen):
-    def __init__(self, proyecto, **kw):
+    def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(CrearExperimentoLayout(proyecto))
 
 
 class EliminarEspacioTrabajoScreen(Screen):
-    def __init__(self, proyecto, **kw):
+    def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(EliminarEspacioTrabajoLayout(proyecto))
 
 
 class EliminarPaqueteScreen(Screen):
-    def __init__(self, proyecto, **kw):
+    def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(EliminarPaqueteLayout(proyecto))
 
 
 class EliminarExperimentoScreen(Screen):
-    def __init__(self, proyecto, **kw):
+    def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(EliminarExperimentoLayout(proyecto))
 

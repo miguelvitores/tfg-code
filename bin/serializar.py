@@ -27,3 +27,12 @@ def testdata(td):
 def serializa(objeto, nombre_fichero):
     with open(nombre_fichero, 'wb') as f:
         pickle.dump(objeto, f)
+
+
+def eliminar_recursivamente(ruta):
+    for f in os.walk(ruta, topdown=False):
+        for d in f[1]:
+            os.rmdir(os.path.join(f[0], d))
+        for file in f[2]:
+            os.remove(os.path.join(f[0], file))
+    os.rmdir(ruta)
