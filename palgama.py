@@ -16,6 +16,7 @@ from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 
 import bin.cargar as cargar
+import bin.testdata.td_tipos as tdt
 import os
 
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
@@ -268,7 +269,6 @@ class DropdownExperimentosOpciones(DropDown):
         except ScreenManagerException:
             screen = CrearExperimentoScreen(self.proyecto, name="add_exp_{0}".format(self.proyecto.nombre))
             sm.add_widget(screen)
-        Window.restore()
         sm.switch_to(screen)
 
     def el_espt(self):
@@ -780,9 +780,9 @@ class CrearPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
         if self.comprobar_form(et, paq):
             self.proyecto.crear_paquete(et, paq)
 
-            popup = Popup(title='Espacio de trabajo creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
+            popup = Popup(title='Paquete creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
                           title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
-                          content=Label(text='Espacio de trabajo creado correctamente',
+                          content=Label(text='Paquete creado correctamente',
                                         font_name="fonts/FiraSans-SemiBold",
                                         color=(1, 1, 1, 1)
                                         ), size_hint=(None, None), size=(350, 100))
@@ -818,10 +818,97 @@ class CrearPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
 
 class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
     rows = 2
+    et_spinner = ObjectProperty()
+    paq_spinner = ObjectProperty()
+    nombre_exp = ObjectProperty()
+    tipoalg_spinner = ObjectProperty()
+    nombrealg_spinner = ObjectProperty()
 
     def __init__(self, proyecto, **kwargs):
         super().__init__(proyecto=proyecto, **kwargs)
         self.proyecto = proyecto
+        self.et_spinner.values = self.proyecto.espacios_trabajo.keys()
+        if len(self.et_spinner.values) == 0:
+            self.et_spinner.text = "No hay ningún espacio de trabajo"
+            self.paq_spinner.text = "No hay ningún paquete"
+        else:
+            self.et_spinner.text = self.et_spinner.values[0]
+            self.actualizar_paqs(self.et_spinner.text)
+        self.tipoalg_spinner.values = [t.capitalize() for t in self.proyecto.algoritmos_permitidos.keys()
+                                       if len(self.proyecto.algoritmos_permitidos[t]) > 0]
+        self.tipoalg_spinner.text = self.tipoalg_spinner.values[0]
+        self.actualizar_nombrealgs(self.tipoalg_spinner.text)
+
+    def actualizar_paqs(self, nombre_et):
+        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        if len(self.paq_spinner.values) == 0:
+            self.paq_spinner.text = "No hay ningún paquete"
+        else:
+            self.paq_spinner.text = self.paq_spinner.values[0]
+
+    def actualizar_nombrealgs(self, tipoalg):
+        t = tipoalg.lower()
+        self.nombrealg_spinner.values = [n.capitalize() for n in self.proyecto.algoritmos_permitidos[t]]
+        self.nombrealg_spinner.text = self.nombrealg_spinner.values[0]
+
+    def comprobar_form(self, et, paq, exp):
+        if self.es_nombre_invalido(exp) or self.es_nombre_repetido(et, paq, exp):
+            return False
+        return True
+
+    def confirmar(self, inst):
+        et = self.et_spinner.text
+        paq = self.paq_spinner.text
+        exp = self.nombre_exp.text
+
+        if len(self.paq_spinner.values) == 0:
+            popup = Popup(title='Error creando experimento', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Ningún paquete v\u00e1lido donde crear un experimento',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+        elif self.comprobar_form(et, paq, exp):
+
+
+
+            self.proyecto.crear_experimento(et, paq, exp, td)
+
+            popup = Popup(title='Experimento creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                          title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Experimento creado correctamente',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+
+            self.recargar_proyecto()
+
+    @staticmethod
+    def es_nombre_invalido(exp):
+        if len(exp) == 0 or exp.isspace():
+            popup = Popup(title='Error creación experimento', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Nombre del experimento no v\u00e1lido',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+            return True
+        return False
+
+    def es_nombre_repetido(self, et, paq, exp):
+        if exp.casefold() in [e.casefold() for e in self.proyecto.espacios_trabajo[et][paq]]:
+            popup = Popup(title='Error creación experimento', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Nombre de experimento ya existente',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+            return True
+        return False
 
 
 class EliminarEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
@@ -962,11 +1049,85 @@ class EliminarPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
 
 class EliminarExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
     rows = 2
+    et_spinner = ObjectProperty()
+    paq_spinner = ObjectProperty()
+    exp_spinner = ObjectProperty()
 
     def __init__(self, proyecto, **kwargs):
         super().__init__(proyecto=proyecto, **kwargs)
         self.proyecto = proyecto
+        self.et_spinner.values = self.proyecto.espacios_trabajo.keys()
+        if len(self.et_spinner.values) == 0:
+            self.et_spinner.text = "No hay ningún espacio de trabajo"
+            self.paq_spinner.text = "No hay ningún paquete"
+            self.exp_spinner.text = "No hay ningún experimento"
+        else:
+            self.et_spinner.text = self.et_spinner.values[0]
+            self.actualizar_paqs(self.et_spinner.text)
+            self.actualizar_exps(self.et_spinner.text, self.paq_spinner.text)
 
+    def actualizar_paqs(self, nombre_et):
+        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        if len(self.paq_spinner.values) == 0:
+            self.paq_spinner.text = "No hay ningún paquete"
+        else:
+            self.paq_spinner.text = self.paq_spinner.values[0]
+
+    def actualizar_exps(self, nombre_et, nombre_paq):
+        self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
+        if len(self.exp_spinner.values) == 0:
+            self.exp_spinner.text = "No hay ningún experimento"
+        else:
+            self.exp_spinner.text = self.exp_spinner.values[0]
+
+    def confirmar(self, inst):
+        if len(self.exp_spinner.values) == 0:
+            popup = Popup(title='Error eliminando experimento', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Ningún experimento v\u00e1lido',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+        else:
+            box = BoxLayout(orientation='horizontal', cols=2)
+            boton_si = Button(text='Eliminar', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.5451, 0.9529, 0.4235, 1))
+            boton_no = Button(text='Cancelar', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
+            box.add_widget(boton_si)
+            box.add_widget(boton_no)
+            popup = Popup(title='Desea eliminar el experimento: {}?'.format(self.paq_spinner.text),
+                          separator_color=(0.4, 0.6078, 0.5647, 1), title_color=(0.4, 0.6078, 0.5647, 1),
+                          title_font="fonts/FiraSans-ThinItalic", content=box, size_hint=(None, None), size=(350, 125))
+            popup.open()
+            boton_si.bind(on_press=self.presionar_eliminar_exp)
+            boton_no.bind(on_press=self.presionar_cancelar_eliminar_exp)
+            boton_si.bind(on_release=self.soltar_eliminar_exp)
+            boton_no.bind(on_release=self.soltar_cancelar_eliminar_exp)
+            boton_si.bind(on_release=popup.dismiss)
+            boton_no.bind(on_release=popup.dismiss)
+
+        popup.open()
+
+    @staticmethod
+    def presionar_eliminar_exp(btn):
+        btn.background_color = (0.2667, 0.9059, 0.0745, 1)
+
+    def soltar_eliminar_exp(self, btn):
+        btn.background_color = (0.5451, 0.9529, 0.4235, 1)
+        self.proyecto.eliminar_experimento(self.et_spinner.text, self.paq_spinner.text, self.exp_spinner.text)
+        self.recargar_proyecto()
+
+    @staticmethod
+    def presionar_cancelar_eliminar_exp(btn):
+        btn.background_color = (0.8824, 0.1451, 0.0784, 1)
+        btn.color = (1, 1, 1, 1)
+
+    @staticmethod
+    def soltar_cancelar_eliminar_exp(btn):
+        btn.background_color = (0.949, 0.4667, 0.4196, 1)
+        btn.color = (0, 0, 0, 1)
 
 # Ventanas
 

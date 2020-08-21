@@ -48,3 +48,11 @@ class Proyecto:
         self.espacios_trabajo[nombre_et].pop(nombre_p, None)
         eliminar_recursivamente(os.path.join(self.ruta, nombre_et, nombre_p))
         self.ult_modif = time.asctime(time.localtime(time.time()))
+
+    def crear_experimento(self, nombre_et, nombre_p, nombre_exp):
+        pass
+
+    def eliminar_experimento(self, nombre_et, nombre_p, nombre_exp):
+        self.espacios_trabajo[nombre_et][nombre_p].pop(nombre_exp, None)
+        os.remove(os.path.join(self.ruta, nombre_et, nombre_p, nombre_exp))
+        self.ult_modif = time.asctime(time.localtime(time.time()))
