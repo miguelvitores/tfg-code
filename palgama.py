@@ -827,7 +827,6 @@ class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
 class EliminarEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
     rows = 2
     et_spinner = ObjectProperty()
-    nombre_paq = ObjectProperty()
 
     def __init__(self, proyecto, **kwargs):
         super().__init__(proyecto=proyecto, **kwargs)
@@ -890,10 +889,75 @@ class EliminarEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
 
 class EliminarPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
     rows = 2
+    et_spinner = ObjectProperty()
+    paq_spinner = ObjectProperty()
 
     def __init__(self, proyecto, **kwargs):
         super().__init__(proyecto=proyecto, **kwargs)
         self.proyecto = proyecto
+        self.et_spinner.values = self.proyecto.espacios_trabajo.keys()
+        if len(self.et_spinner.values) == 0:
+            self.et_spinner.text = "No hay ningún espacio de trabajo"
+            self.paq_spinner.text = "No hay ningún paquete"
+        else:
+            self.et_spinner.text = self.et_spinner.values[0]
+            self.actualizar_paqs(self.et_spinner.text)
+
+    def actualizar_paqs(self, nombre_et):
+        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        if len(self.paq_spinner.values) == 0:
+            self.paq_spinner.text = "No hay ningún paquete"
+        else:
+            self.paq_spinner.text = self.paq_spinner.values[0]
+
+    def confirmar(self, inst):
+        if len(self.paq_spinner.values) == 0:
+            popup = Popup(title='Error eliminando paquete', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Ningún paquete v\u00e1lido',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+        else:
+            box = BoxLayout(orientation='horizontal', cols=2)
+            boton_si = Button(text='Eliminar', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.5451, 0.9529, 0.4235, 1))
+            boton_no = Button(text='Cancelar', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
+            box.add_widget(boton_si)
+            box.add_widget(boton_no)
+            popup = Popup(title='Desea eliminar el paquete: {}?'.format(self.paq_spinner.text),
+                          separator_color=(0.4, 0.6078, 0.5647, 1), title_color=(0.4, 0.6078, 0.5647, 1),
+                          title_font="fonts/FiraSans-ThinItalic", content=box, size_hint=(None, None), size=(350, 125))
+            popup.open()
+            boton_si.bind(on_press=self.presionar_eliminar_paq)
+            boton_no.bind(on_press=self.presionar_cancelar_eliminar_paq)
+            boton_si.bind(on_release=self.soltar_eliminar_paq)
+            boton_no.bind(on_release=self.soltar_cancelar_eliminar_paq)
+            boton_si.bind(on_release=popup.dismiss)
+            boton_no.bind(on_release=popup.dismiss)
+
+        popup.open()
+
+    @staticmethod
+    def presionar_eliminar_paq(btn):
+        btn.background_color = (0.2667, 0.9059, 0.0745, 1)
+
+    def soltar_eliminar_paq(self, btn):
+        btn.background_color = (0.5451, 0.9529, 0.4235, 1)
+        self.proyecto.eliminar_paquete(self.et_spinner.text, self.paq_spinner.text)
+        self.recargar_proyecto()
+
+    @staticmethod
+    def presionar_cancelar_eliminar_paq(btn):
+        btn.background_color = (0.8824, 0.1451, 0.0784, 1)
+        btn.color = (1, 1, 1, 1)
+
+    @staticmethod
+    def soltar_cancelar_eliminar_paq(btn):
+        btn.background_color = (0.949, 0.4667, 0.4196, 1)
+        btn.color = (0, 0, 0, 1)
 
 
 class EliminarExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
