@@ -5,19 +5,41 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.dropdown import DropDown
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition, ScreenManagerException
-from bin.serializar import ajustes, eliminar_recursivamente
-from bin.usuarios import Alumno, Profesor
-from bin.proyecto import Proyecto
 from kivy.config import Config
 from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
+from kivy.uix.image import Image
+from kivy.uix.tabbedpanel import TabbedPanelItem
+from pygal.view import Box
+
+from bin.serializar import ajustes, eliminar_recursivamente
+from bin.usuarios import Alumno, Profesor
+from bin.proyecto import Proyecto
+from bin.testdata.rango import RangoTam, RangoVal
+from bin.testdata.td_tipos import TestDataOrdenacionLOEquidistante, TestDataOrdenacionLOACR, TestDataOrdenacionLOASR, \
+    TestDataOrdenacionLAleatoria, TestDataOrdenacionLAleatoriaSR, TestDataBusquedaLOEquidistante, \
+    TestDataBusquedaLAleatoria, TestDataBusquedaLOACR, TestDataBusquedaLOASR
+from bin.algoritmos.ord.ordenacionseleccion import OrdenacionSeleccion
+from bin.algoritmos.ord.ordenacioninsercion import OrdenacionInsercion
+from bin.algoritmos.ord.ordenacionburbuja import OrdenacionBurbuja
+from bin.algoritmos.ord.ordenacionquicksort import OrdenacionQuicksort
+from bin.algoritmos.ord.ordenacionshellsort import OrdenacionShellsort
+from bin.algoritmos.ord.ordenacionmergesort import OrdenacionMergesort
+from bin.algoritmos.ord.ordenacionradixsort import OrdenacionRadixsort
+from bin.algoritmos.busq.busquedalineal import BusquedaLineal
+from bin.algoritmos.busq.busquedabinaria import BusquedaBinaria
+from bin.algoritmos.busq.busquedasalto import BusquedaSalto
+from bin.algoritmos.busq.busquedainterpolacion import BusquedaInterpolacion
+from bin.algoritmos.busq.busquedaexponencial import BusquedaExponencial
+from bin.algoritmos.busq.busquedafibonacci import BusquedaFibonacci
 
 import bin.cargar as cargar
 import bin.testdata.td_tipos as tdt
 import os
+import pygal
 
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 Config.set('graphics', 'resizable', 0)
@@ -679,6 +701,8 @@ class AbrirProyectoLayout(BoxLayout):
         self.dpdex = DropdownExperimentos(self.proyecto)
         self.dpdgi = DropdownGraficasInteractivas()
         self.dpdta = DropdownTeoriaAlgortimos(self.proyecto)
+        for graf in self.proyecto.graficas_abiertas:
+            self.add_pest(graf)
 
     def soltar_dpdex(self, instancia):
         self.dpdex.open(instancia)
@@ -688,6 +712,69 @@ class AbrirProyectoLayout(BoxLayout):
 
     def soltar_dpdta(self, instancia):
         self.dpdta.open(instancia)
+
+    @staticmethod
+    def presionar_csv(btn):
+        btn.background_color = (0.2706, 0.4118, 0.3804, 1)
+        btn.color = (1, 1, 1, 1)
+
+    @staticmethod
+    def soltar_csv(btn):
+        btn.background_color = (0.4, 0.6078, 0.5647, 1)
+        btn.color = (0, 0, 0, 1)
+        graf_pickle = "{0}_graf.pickle".format(btn.parent.id)
+        graf = cargar.carga(graf_pickle)
+        graf.render_in_browser()
+
+    @staticmethod
+    def presionar_cerrarp(btn):
+        btn.background_color = (0.8824, 0.1451, 0.0784, 1)
+        btn.color = (1, 1, 1, 1)
+
+    def soltar_cerrarp(self, btn):
+        btn.background_color = (0.949, 0.4667, 0.4196, 1)
+        btn.color = (0, 0, 0, 1)
+        pest_actual = self.panel_graficas.current_tab
+        self.panel_graficas.remove_widget(pest_actual)
+        self.panel_graficas.remove_widget(pest_actual.content)
+        self.proyecto.graficas_abiertas.remove(btn.parent.id)
+        if len(self.panel_graficas.tab_list) > 0:
+            self.panel_graficas.switch_to(self.panel_graficas.tab_list[0])
+
+    def add_pest(self, graf):
+        graf_png = "{0}.png".format(graf)
+        img = Image(source=graf_png, size_hint_y=0.9, allow_stretch=True)
+        bxlv = BoxLayout(orientation="vertical")
+        bxlh = BoxLayout(orientation="horizontal", size_hint_y=0.1)
+        btn = Button(text="Abrir csv en navegador", size_hint_x=0.3, background_normal='', background_down='',
+                     background_color=(0.4, 0.6078, 0.5647, 1))
+        btn_cerrar = Button(text="Cerrar pestaña", size_hint_x=0.3, background_normal='', background_down='',
+                            background_color=(0.949, 0.4667, 0.4196, 1))
+        bxlh.add_widget(BoxLayout(size_hint_x=0.15))
+        bxlh.add_widget(btn)
+        bxlh.add_widget(BoxLayout(size_hint_x=0.1))
+        bxlh.add_widget(btn_cerrar)
+        bxlh.add_widget(BoxLayout(size_hint_x=0.15))
+        bxlh.id = graf
+        bxlv.add_widget(img)
+        bxlv.add_widget(bxlh)
+        tbdp = TabbedPanelItem(text=os.path.basename(graf_png))
+        btn.bind(on_press=self.presionar_csv)
+        btn.bind(on_release=self.soltar_csv)
+        btn_cerrar.bind(on_press=self.presionar_cerrarp)
+        btn_cerrar.bind(on_release=self.soltar_cerrarp)
+        tbdp.add_widget(bxlv)
+        self.panel_graficas.add_widget(tbdp)
+        if len(self.panel_graficas.tab_list) == 1:
+            self.panel_graficas.switch_to(tbdp)
+
+    def seleccionar_archivo(self, seleccion):
+        if len(seleccion) > 0:
+            arch = seleccion[0]
+            if os.path.isfile(arch):
+                graf = arch.split('.')[0]
+                self.proyecto.graficas_abiertas.append(graf)
+                self.add_pest(graf)
 
     @staticmethod
     def volver_a_principal(inst):
@@ -817,12 +904,20 @@ class CrearPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
 
 
 class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
-    rows = 2
+    rows = 3
     et_spinner = ObjectProperty()
     paq_spinner = ObjectProperty()
     nombre_exp = ObjectProperty()
     tipoalg_spinner = ObjectProperty()
     nombrealg_spinner = ObjectProperty()
+    tipoexp_spinner = ObjectProperty()
+    slid_tmax = ObjectProperty()
+    slid_tmin = ObjectProperty()
+    slid_prec = ObjectProperty()
+    slid_vmax = ObjectProperty()
+    slid_vmin = ObjectProperty()
+    slid_emax = ObjectProperty()
+    slid_rep = ObjectProperty()
 
     def __init__(self, proyecto, **kwargs):
         super().__init__(proyecto=proyecto, **kwargs)
@@ -837,7 +932,12 @@ class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
         self.tipoalg_spinner.values = [t.capitalize() for t in self.proyecto.algoritmos_permitidos.keys()
                                        if len(self.proyecto.algoritmos_permitidos[t]) > 0]
         self.tipoalg_spinner.text = self.tipoalg_spinner.values[0]
+        self.tipoexp_spinner.values = ["Lista Ordenada Equidistante", "Lista Ordenada Aleatoria Con Repetición",
+                                       "Lista Ordenada Aleatoria Sin Repetición"]
+        self.tipoexp_spinner.text = self.tipoexp_spinner.values[0]
         self.actualizar_nombrealgs(self.tipoalg_spinner.text)
+        self.rangot_desactivado = True
+        self.rangov_desactivado = True
 
     def actualizar_paqs(self, nombre_et):
         self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
@@ -847,9 +947,38 @@ class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
             self.paq_spinner.text = self.paq_spinner.values[0]
 
     def actualizar_nombrealgs(self, tipoalg):
-        t = tipoalg.lower()
-        self.nombrealg_spinner.values = [n.capitalize() for n in self.proyecto.algoritmos_permitidos[t]]
+        tipo_alg = tipoalg.lower()
+        self.nombrealg_spinner.values = [n.capitalize() for n in self.proyecto.algoritmos_permitidos[tipo_alg]]
         self.nombrealg_spinner.text = self.nombrealg_spinner.values[0]
+        nombre_alg = self.nombrealg_spinner.text.lower()
+        self.actualizar_tipoexps(tipo_alg, nombre_alg)
+
+    def actualizar_tipoexps(self, tipo_alg, nombre_alg):
+        if tipo_alg == "búsqueda" and nombre_alg != "lineal":
+            try:
+                self.tipoexp_spinner.values.remove("Lista Aleatoria") 
+                self.tipoexp_spinner.values.remove("Lista Aleatoria Sin Repetición")
+            except ValueError:
+                pass
+        elif tipo_alg == "ordenación" or tipo_alg == "búsqueda" and nombre_alg == "lineal":
+            if "Lista Aleatoria" not in self.tipoexp_spinner.values:
+                self.tipoexp_spinner.values.append("Lista Aleatoria")
+            if "Lista Aleatoria Sin Repetición" not in self.tipoexp_spinner.values:
+                self.tipoexp_spinner.values.append("Lista Aleatoria Sin Repetición")
+
+    def editar_rangot(self, switch):
+        estado = not switch.active
+        (self.slid_tmax.disabled, self.slid_tmin.disabled, self.slid_prec.disabled, self.rangot_desactivado) = \
+            (estado for a in range(4))
+        if estado:
+            (self.slid_tmax.value, self.slid_tmin.value, self.slid_prec.value) = (32, 1, 1)
+
+    def editar_rangov(self, switch):
+        estado = not switch.active
+        (self.slid_vmax.disabled, self.slid_vmin.disabled, self.slid_emax.disabled, self.rangov_desactivado) = \
+            (estado for a in range(4))
+        if estado:
+            (self.slid_vmax.value, self.slid_vmin.value, self.slid_emax.value) = (16, 0, 1)
 
     def comprobar_form(self, et, paq, exp):
         if self.es_nombre_invalido(exp) or self.es_nombre_repetido(et, paq, exp):
@@ -871,8 +1000,67 @@ class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
             popup.open()
         elif self.comprobar_form(et, paq, exp):
 
+            if self.rangot_desactivado:
+                rt = RangoTam(int(self.slid_tmax.value))
+            else:
+                rt = RangoTam(int(self.slid_tmax.value), int(self.slid_tmin.value), self.slid_prec.value)
+            if self.rangov_desactivado:
+                rv = RangoVal(int(self.slid_vmax.value))
+            else:
+                rv = RangoVal(int(self.slid_vmax.value), int(self.slid_vmin.value), self.slid_emax.value)
+            rep = int(self.slid_rep.value)
+            tipo_alg = self.tipoalg_spinner.text.lower()
+            nombre_alg = self.nombrealg_spinner.text.lower()
+            tipo_exp = self.tipoexp_spinner.text.lower()
 
+            if tipo_alg == "búsqueda":
+                if nombre_alg == "binaria":
+                    alg = BusquedaBinaria()
+                elif nombre_alg == "exponencial":
+                    alg = BusquedaExponencial()
+                elif nombre_alg == "fibonacci":
+                    alg = BusquedaFibonacci()
+                elif nombre_alg == "interpolación":
+                    alg = BusquedaInterpolacion()
+                elif nombre_alg == "lineal":
+                    alg = BusquedaLineal()
+                else:
+                    alg = BusquedaSalto()
+                if tipo_exp == "lista ordenada equidistante":
+                    td = TestDataBusquedaLOEquidistante(alg, rt, rv, rep)
+                elif tipo_exp == "lista aleatoria":
+                    td = TestDataBusquedaLAleatoria(alg, rt, rv, rep)
+                elif tipo_exp == "lista ordenada aleatoria con repetición":
+                    td = TestDataBusquedaLOACR(alg, rt, rv, rep)
+                else:
+                    td = TestDataBusquedaLOASR(alg, rt, rv, rep)
+            else:
+                if nombre_alg == "burbuja":
+                    alg = OrdenacionBurbuja()
+                elif nombre_alg == "inserción":
+                    alg = OrdenacionInsercion()
+                elif nombre_alg == "mergesort":
+                    alg = OrdenacionMergesort()
+                elif nombre_alg == "3way quicksort":
+                    alg = OrdenacionQuicksort()
+                elif nombre_alg == "radixsort":
+                    alg = OrdenacionRadixsort()
+                elif nombre_alg == "selección":
+                    alg = OrdenacionSeleccion()
+                else:
+                    alg = OrdenacionShellsort()
+                if tipo_exp == "lista ordenada equidistante":
+                    td = TestDataOrdenacionLOEquidistante(alg, rt, rv, rep)
+                elif tipo_exp == "lista aleatoria":
+                    td = TestDataOrdenacionLAleatoria(alg, rt, rv, rep)
+                elif tipo_exp == "lista ordenada aleatoria con repetición":
+                    td = TestDataOrdenacionLOACR(alg, rt, rv, rep)
+                elif tipo_exp == "lista ordenada aleatoria sin repetición":
+                    td = TestDataOrdenacionLOASR(alg, rt, rv, rep)
+                else:
+                    td = TestDataOrdenacionLAleatoriaSR(alg, rt, rv, rep)
 
+            td.analizar()
             self.proyecto.crear_experimento(et, paq, exp, td)
 
             popup = Popup(title='Experimento creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
@@ -899,7 +1087,7 @@ class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
         return False
 
     def es_nombre_repetido(self, et, paq, exp):
-        if exp.casefold() in [e.casefold() for e in self.proyecto.espacios_trabajo[et][paq]]:
+        if exp.casefold() in [e.casefold() for e in self.proyecto.espacios_trabajo[et][paq].keys()]:
             popup = Popup(title='Error creación experimento', separator_color=(0.9059, 0.3451, 0.3529, 1),
                           title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
                           content=Label(text='Nombre de experimento ya existente',
@@ -1128,6 +1316,7 @@ class EliminarExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
     def soltar_cancelar_eliminar_exp(btn):
         btn.background_color = (0.949, 0.4667, 0.4196, 1)
         btn.color = (0, 0, 0, 1)
+
 
 # Ventanas
 

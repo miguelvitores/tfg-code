@@ -48,7 +48,7 @@ class TestData(metaclass=abc.ABCMeta):
         self.resultados.clear()
 
     def editar_repet(self, repet: int):
-        """Edita las repeticiones del testadata"""
+        """Edita las repeticiones del testdata"""
         comprep(repet)
         self.repet = repet
 

@@ -24,6 +24,10 @@
     font_name: "fonts/FiraSans-Medium"
     color: (0, 0, 0, 1)
 
+<MediumWhiteLabel@Label>:
+    font_name: "fonts/FiraSans-Medium"
+    color: (1, 1, 1, 1)
+
 <BoldLabel@Label>:
     font_name: "fonts/FiraSans-Bold"
     color: (0, 0, 0, 1)
@@ -31,6 +35,15 @@
 <ThinLabel@Label>:
     font_name: "fonts/FiraSans-Thin"
     color: (0, 0, 0, 1)
+
+<ThinWhiteLabel@Label>:
+    font_name: "fonts/FiraSans-Thin"
+    color: (1, 1, 1, 1)
+
+<MiniBoldWhiteLabel@Label>:
+    font_name: "fonts/FiraSans-Bold"
+    font_size: 12
+    color: (1, 1, 1, 1)
 
 <MiniLabel@Label>:
     font_size: 12
@@ -74,6 +87,18 @@
 <SplitterStrip>:
     background_normal: ''
     background_color: (1.0, 0.9412, 0.7922, 1)
+
+<TabbedPanelHeader>:
+    background_normal: ''
+    background_color: (0.7725, 0.9882, 0.9412, 1)
+    canvas.after:
+        Color:
+            rgba: (0.8, 0.7529, 0.6314, 1)
+        Line:
+            width: 1
+            rectangle: (self.x, self.y, self.width, self.height)
+    on_press: self.background_color = (0.6157, 0.7882, 0.749, 1)
+    on_release: self.background_color = (0.7725, 0.9882, 0.9412, 1)
 
 <PrincipalLayout>:
     cols: 2
@@ -665,12 +690,15 @@
                 FileChooserListView:
                     id: filechooser
                     size_hint_y: 0.954
+                    filters: ["*.png"]
+                    on_selection: root.seleccionar_archivo(self.selection)
 
         TabbedPanel:
             id: panel_graficas
             size_hint_x: 0.75
             background_color: (0.7725, 0.9882, 0.9412, 1)
             do_default_tab: False
+            tab_width: root.width / 8
 
             canvas.before:
                 Color:
@@ -1264,6 +1292,17 @@
     nombre_exp: nombre_exp
     tipoalg_spinner: tipoalg_spinner
     nombrealg_spinner: nombrealg_spinner
+    tipoexp_spinner: tipoexp_spinner
+    slid_tmax: slid_tmax
+    slid_tmin: slid_tmin
+    slid_prec: slid_prec
+    slid_vmax: slid_vmax
+    slid_vmin: slid_vmin
+    slid_emax: slid_emax
+    slid_rep: slid_rep
+
+    spacing: 10
+    padding: 10
 
     canvas:
         Color:
@@ -1274,8 +1313,8 @@
 
     BoxLayout:
         orientation: 'horizontal'
-        cols: 2
-        size_hint_y: 0.1
+        cols: 3
+        size_hint_y: 0.05
 
         SalirButton:
             size_hint_x: 0.1
@@ -1284,265 +1323,502 @@
                 self.background_color = (0.7725, 0.9882, 0.9412, 1)
                 root.volver_abrirpr(self)
 
-        BoxLayout:
-            size_hint_x: 0.9
-
-    BoxLayout:
-        size_hint_y: 0.9
-        orientation: 'horizontal'
-        cols: 3
-
+        BoldLabel:
+            size_hint_y: 0.8
+            text: "Crear nuevo experimento"
+            font_size: 22
+            color: (1, 1, 1, 1)
 
         BoxLayout:
             size_hint_x: 0.1
 
+
+    BoxLayout:
+        size_hint_y: 0.9
+        orientation: 'vertical'
+        rows: 2
+
+        canvas.after:
+            Color:
+                rgba: (0.7725, 0.9882, 0.9412, 1)
+            Line:
+                width: 2
+                rectangle: (self.x, self.y, self.width, self.height)
+
+
         BoxLayout:
-            size_hint_x: 0.8
-            orientation: 'vertical'
-            rows: 2
-            padding: 10
-            spacing: 10
+            orientation: 'horizontal'
+            cols: 2
+            size_hint_y: 0.8
 
-            BoxLayout:
-                size_hint_y: 0.9
-                orientation: 'vertical'
-                rows: 2
+            GridLayout:
+                cols: 2
+                rows: 6
 
-                canvas:
+                canvas.before:
                     Color:
                         rgba: (1.0, 0.9412, 0.7922, 1)
                     Rectangle:
                         pos: self.pos
                         size: self.size
 
-                BoldLabel:
-                    size_hint_y: 0.2
-                    text: "Crear nuevo experimento"
-                    font_size: 22
+
+                MediumLabel:
+                    size_hint_x: 0.4
+                    text: "Nombre espacio de trabajo"
 
                 BoxLayout:
-                    orientation: 'horizontal'
-                    cols: 2
-                    size_hint_y: 0.8
+                    size_hint_x: 0.6
+                    orientation: 'vertical'
+                    rows: 3
 
-                    GridLayout:
-                        cols: 2
-                        rows: 3
+                    BoxLayout:
+                        size_hint_y: 0.46
 
-                        MediumLabel:
-                            size_hint_x: 0.4
-                            text: "Nombre espacio de trabajo"
-
-                        BoxLayout:
-                            size_hint_x: 0.6
-                            orientation: 'vertical'
-                            rows: 3
-
-                            BoxLayout:
-                                size_hint_y: 0.46
-
-                            BoxLayout:
-                                size_hint_y: 0.08
-                                orientation: 'horizontal'
-                                cols: 3
-
-                                BoxLayout:
-                                    size_hint_x: 0.15
-
-                                SpinnerWidget:
-                                    id: et_spinner5
-                                    background_color: (0, 0, 0, 1)
-                                    color: (1, 1, 1, 1)
-                                    font_name: "fonts/FiraSans-Bold"
-                                    size_hint_y: None
-                                    height: 40
-                                    size_hint_x: 0.7
-                                    text_size: (200, None)
-                                    halign: 'center'
-                                    on_text: root.actualizar_paqs(self.text)
-
-                                BoxLayout:
-                                    size_hint_x: 0.15
-
-                            BoxLayout:
-                                size_hint_y: 0.46
-
-                        MediumLabel:
-                            size_hint_x: 0.4
-                            text: "Nombre paquete"
+                    BoxLayout:
+                        size_hint_y: 0.08
+                        orientation: 'horizontal'
+                        cols: 3
 
                         BoxLayout:
-                            size_hint_x: 0.6
-                            orientation: 'vertical'
-                            rows: 3
+                            size_hint_x: 0.15
 
-                            BoxLayout:
-                                size_hint_y: 0.46
-
-                            BoxLayout:
-                                size_hint_y: 0.08
-                                orientation: 'horizontal'
-                                cols: 3
-
-                                BoxLayout:
-                                    size_hint_x: 0.15
-
-                                SpinnerWidget:
-                                    id: paq_spinner3
-                                    background_color: (0, 0, 0, 1)
-                                    color: (1, 1, 1, 1)
-                                    font_name: "fonts/FiraSans-Bold"
-                                    size_hint_y: None
-                                    height: 40
-                                    size_hint_x: 0.7
-                                    text_size: (200, None)
-                                    halign: 'center'
-
-                                BoxLayout:
-                                    size_hint_x: 0.15
-
-                            BoxLayout:
-                                size_hint_y: 0.46
-
-                        MediumLabel:
-                            size_hint_x: 0.4
-                            text: "Nombre experimento"
+                        SpinnerWidget:
+                            id: et_spinner5
+                            background_color: (0, 0, 0, 1)
+                            color: (1, 1, 1, 1)
+                            font_name: "fonts/FiraSans-Bold"
+                            size_hint_y: None
+                            height: 40
+                            size_hint_x: 0.7
+                            text_size: (200, None)
+                            halign: 'center'
+                            on_text: root.actualizar_paqs(self.text)
 
                         BoxLayout:
-                            size_hint_x: 0.6
-                            orientation: 'vertical'
-                            rows: 3
+                            size_hint_x: 0.15
 
-                            BoxLayout:
-                                size_hint_y: 0.46
+                    BoxLayout:
+                        size_hint_y: 0.46
 
-                            BoxLayout:
-                                size_hint_y: 0.08
-                                orientation: 'horizontal'
-                                cols: 3
+                MediumLabel:
+                    size_hint_x: 0.4
+                    text: "Nombre paquete"
 
-                                BoxLayout:
-                                    size_hint_x: 0.15
+                BoxLayout:
+                    size_hint_x: 0.6
+                    orientation: 'vertical'
+                    rows: 3
 
-                                TextInput:
-                                    id: nombre_exp
-                                    size_hint_x: 0.7
-                                    size_hint_y: None
-                                    multiline: False
-                                    focus: True
-                                    write_tab: False
-                                    hint_text: "Nombre del experimento a crear"
-                                    height: self.minimum_height
-                                    on_text_validate: root.confirmar(self)
+                    BoxLayout:
+                        size_hint_y: 0.46
 
-                                BoxLayout:
-                                    size_hint_x: 0.15
-
-                            BoxLayout:
-                                size_hint_y: 0.46
-                    GridLayout:
-                        cols: 2
-                        rows: 2
-
-                        MediumLabel:
-                            size_hint_x: 0.4
-                            text: "Tipo algoritmo"
+                    BoxLayout:
+                        size_hint_y: 0.08
+                        orientation: 'horizontal'
+                        cols: 3
 
                         BoxLayout:
-                            size_hint_x: 0.6
-                            orientation: 'vertical'
-                            rows: 3
+                            size_hint_x: 0.15
 
-                            BoxLayout:
-                                size_hint_y: 0.46
-
-                            BoxLayout:
-                                size_hint_y: 0.08
-                                orientation: 'horizontal'
-                                cols: 3
-
-                                BoxLayout:
-                                    size_hint_x: 0.15
-
-                                SpinnerWidget:
-                                    id: tipoalg_spinner
-                                    background_color: (0, 0, 0, 1)
-                                    color: (1, 1, 1, 1)
-                                    font_name: "fonts/FiraSans-Bold"
-                                    size_hint_y: None
-                                    height: 40
-                                    size_hint_x: 0.7
-                                    text_size: (200, None)
-                                    halign: 'center'
-                                    on_text: root.actualizar_nombrealgs(self.text)
-
-                                BoxLayout:
-                                    size_hint_x: 0.15
-
-                            BoxLayout:
-                                size_hint_y: 0.46
-
-                        MediumLabel:
-                            size_hint_x: 0.4
-                            text: "Nombre algoritmo"
+                        SpinnerWidget:
+                            id: paq_spinner3
+                            background_color: (0, 0, 0, 1)
+                            color: (1, 1, 1, 1)
+                            font_name: "fonts/FiraSans-Bold"
+                            size_hint_y: None
+                            height: 40
+                            size_hint_x: 0.7
+                            text_size: (200, None)
+                            halign: 'center'
 
                         BoxLayout:
-                            size_hint_x: 0.6
-                            orientation: 'vertical'
-                            rows: 3
+                            size_hint_x: 0.15
 
-                            BoxLayout:
-                                size_hint_y: 0.46
+                    BoxLayout:
+                        size_hint_y: 0.46
 
-                            BoxLayout:
-                                size_hint_y: 0.08
-                                orientation: 'horizontal'
-                                cols: 3
+                MediumLabel:
+                    size_hint_x: 0.4
+                    text: "Nombre experimento"
 
-                                BoxLayout:
-                                    size_hint_x: 0.15
+                BoxLayout:
+                    size_hint_x: 0.6
+                    orientation: 'vertical'
+                    rows: 3
 
-                                SpinnerWidget:
-                                    id: nombrealg_spinner
-                                    background_color: (0, 0, 0, 1)
-                                    color: (1, 1, 1, 1)
-                                    font_name: "fonts/FiraSans-Bold"
-                                    size_hint_y: None
-                                    height: 40
-                                    size_hint_x: 0.7
-                                    text_size: (200, None)
-                                    halign: 'center'
+                    BoxLayout:
+                        size_hint_y: 0.46
 
-                                BoxLayout:
-                                    size_hint_x: 0.15
+                    BoxLayout:
+                        size_hint_y: 0.08
+                        orientation: 'horizontal'
+                        cols: 3
 
-                            BoxLayout:
-                                size_hint_y: 0.46
+                        BoxLayout:
+                            size_hint_x: 0.15
 
+                        TextInput:
+                            id: nombre_exp
+                            size_hint_x: 0.7
+                            size_hint_y: None
+                            multiline: False
+                            focus: True
+                            write_tab: False
+                            hint_text: "Nombre del experimento a crear"
+                            height: self.minimum_height
+                            on_text_validate: root.confirmar(self)
+
+                        BoxLayout:
+                            size_hint_x: 0.15
+
+                    BoxLayout:
+                        size_hint_y: 0.46
+
+                MediumLabel:
+                    size_hint_x: 0.4
+                    text: "Tipo algoritmo"
+
+                BoxLayout:
+                    size_hint_x: 0.6
+                    orientation: 'vertical'
+                    rows: 3
+
+                    BoxLayout:
+                        size_hint_y: 0.46
+
+                    BoxLayout:
+                        size_hint_y: 0.08
+                        orientation: 'horizontal'
+                        cols: 3
+
+                        BoxLayout:
+                            size_hint_x: 0.15
+
+                        SpinnerWidget:
+                            id: tipoalg_spinner
+                            background_color: (0, 0, 0, 1)
+                            color: (1, 1, 1, 1)
+                            font_name: "fonts/FiraSans-Bold"
+                            size_hint_y: None
+                            height: 40
+                            size_hint_x: 0.7
+                            text_size: (200, None)
+                            halign: 'center'
+                            on_text: root.actualizar_nombrealgs(self.text)
+
+                        BoxLayout:
+                            size_hint_x: 0.15
+
+                    BoxLayout:
+                        size_hint_y: 0.46
+
+                MediumLabel:
+                    size_hint_x: 0.4
+                    text: "Nombre algoritmo"
+
+                BoxLayout:
+                    size_hint_x: 0.6
+                    orientation: 'vertical'
+                    rows: 3
+
+                    BoxLayout:
+                        size_hint_y: 0.46
+
+                    BoxLayout:
+                        size_hint_y: 0.08
+                        orientation: 'horizontal'
+                        cols: 3
+
+                        BoxLayout:
+                            size_hint_x: 0.15
+
+                        SpinnerWidget:
+                            id: nombrealg_spinner
+                            background_color: (0, 0, 0, 1)
+                            color: (1, 1, 1, 1)
+                            font_name: "fonts/FiraSans-Bold"
+                            size_hint_y: None
+                            height: 40
+                            size_hint_x: 0.7
+                            text_size: (200, None)
+                            halign: 'center'
+                            on_text: root.actualizar_tipoexps(tipoalg_spinner.text.lower(), self.text.lower())
+
+                        BoxLayout:
+                            size_hint_x: 0.15
+
+                    BoxLayout:
+                        size_hint_y: 0.46
+
+                MediumLabel:
+                    size_hint_x: 0.4
+                    text: "Tipo experimento"
+
+                BoxLayout:
+                    size_hint_x: 0.6
+                    orientation: 'vertical'
+                    rows: 3
+
+                    BoxLayout:
+                        size_hint_y: 0.46
+
+                    BoxLayout:
+                        size_hint_y: 0.08
+                        orientation: 'horizontal'
+                        cols: 3
+
+                        BoxLayout:
+                            size_hint_x: 0.15
+
+                        SpinnerWidget:
+                            id: tipoexp_spinner
+                            background_color: (0, 0, 0, 1)
+                            color: (1, 1, 1, 1)
+                            font_name: "fonts/FiraSans-Bold"
+                            size_hint_y: None
+                            font_size: 14
+                            height: 40
+                            size_hint_x: 0.7
+                            text_size: (200, None)
+                            halign: 'center'
+
+                        BoxLayout:
+                            size_hint_x: 0.15
+
+                    BoxLayout:
+                        size_hint_y: 0.46
 
             BoxLayout:
-                orientation: 'horizontal'
-                cols: 3
-                size_hint_y: 0.1
+                rows: 3
+                orientation: 'vertical'
+
+                canvas.before:
+                    Color:
+                        rgba: (0.2706, 0.4118, 0.3804, 1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
 
                 BoxLayout:
-                    size_hint_x: 0.2
-                Button:
-                    size_hint_x: 0.6
-                    text: "Confirmar"
-                    background_color: (0.4, 0.6078, 0.5647, 1)
-                    on_press:
-                        self.background_color = (0.2706, 0.4118, 0.3804, 1)
-                        self.color = (1, 1, 1, 1)
-                    on_release:
-                        self.background_color = (0.4, 0.6078, 0.5647, 1)
-                        self.color = (0, 0, 0, 1)
-                        root.confirmar(self)
+                    cols: 3
+                    orientation: 'horizontal'
+
+                    canvas.before:
+                        Color:
+                            rgba: (0.4, 0.6078, 0.5647, 0.3)
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+                    MediumWhiteLabel:
+                        text: "Editar el rango de tama\u00f1os de las listas a analizar"
+                        text_size: (150, None)
+                        size_hint_x: 0.4
+
+                    Switch:
+                        active: False
+                        on_active: root.editar_rangot(self)
+                        size_hint_x: 0.1
+
+                    BoxLayout:
+                        rows: 3
+                        orientation: 'vertical'
+
+
+                        BoxLayout:
+                            cols: 3
+                            orientation: 'horizontal'
+
+
+                            MiniBoldWhiteLabel:
+                                text: "Tama\u00f1o m\u00e1ximo"
+
+                            Slider:
+                                id: slid_tmax
+                                value: 32
+                                min: slid_tmin.value
+                                max: 128
+                                step: 1
+                                disabled: True
+                                value_track: True
+                                value_track_color: (1.0, 0.9412, 0.7922, 1)
+
+                            MiniBoldWhiteLabel:
+                                text: str(slid_tmax.value)
+
+                        BoxLayout:
+                            cols: 3
+                            orientation: 'horizontal'
+
+                            MiniBoldWhiteLabel:
+                                text: "Tama\u00f1o m\u00ednimo"
+
+                            Slider:
+                                id: slid_tmin
+                                value: 1
+                                min: 1
+                                max: slid_tmax.value - 1
+                                step: 1
+                                disabled: True
+                                value_track: True
+                                value_track_color: (1.0, 0.9412, 0.7922, 1)
+
+                            MiniBoldWhiteLabel:
+                                text: str(slid_tmin.value)
+
+                        BoxLayout:
+                            cols: 3
+                            orientation: 'horizontal'
+
+                            MiniBoldWhiteLabel:
+                                text: "Precisi\u00f3n"
+
+                            Slider:
+                                id: slid_prec
+                                value: 1
+                                min: max((slid_tmax.value - slid_tmin.value) / 42, 0.1)
+                                max: 16
+                                step: 0.1
+                                disabled: True
+                                value_track: True
+                                value_track_color: (1.0, 0.9412, 0.7922, 1)
+
+                            MiniBoldWhiteLabel:
+                                text: str(round(slid_prec.value, 1))
+
                 BoxLayout:
-                    size_hint_x: 0.2
+                    cols: 3
+                    orientation: 'horizontal'
+
+                    canvas.before:
+                        Color:
+                            rgba: (0.4, 0.6078, 0.5647, 0.15)
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+                    MediumWhiteLabel:
+                        text: "Editar el rango de los valores de cada lista"
+                        text_size: (150, None)
+                        size_hint_x: 0.4
+
+                    Switch:
+                        active: False
+                        on_active: root.editar_rangov(self)
+                        size_hint_x: 0.1
+
+                    BoxLayout:
+                        rows: 3
+                        orientation: 'vertical'
+
+
+                        BoxLayout:
+                            cols: 3
+                            orientation: 'horizontal'
+
+
+                            MiniBoldWhiteLabel:
+                                text: "Valor m\u00e1ximo"
+
+                            Slider:
+                                id: slid_vmax
+                                value: 16
+                                min: slid_vmin.value
+                                max: 2048
+                                step: 1
+                                disabled: True
+                                value_track: True
+                                value_track_color: (1.0, 0.9412, 0.7922, 1)
+
+                            MiniBoldWhiteLabel:
+                                text: str(slid_vmax.value)
+
+                        BoxLayout:
+                            cols: 3
+                            orientation: 'horizontal'
+
+                            MiniBoldWhiteLabel:
+                                text: "Valor m\u00ednimo"
+
+                            Slider:
+                                id: slid_vmin
+                                value: 0
+                                min: 0
+                                max: slid_vmax.value
+                                step: 1
+                                disabled: True
+                                value_track: True
+                                value_track_color: (1.0, 0.9412, 0.7922, 1)
+
+                            MiniBoldWhiteLabel:
+                                text: str(slid_vmin.value)
+
+                        BoxLayout:
+                            cols: 3
+                            orientation: 'horizontal'
+
+                            MiniBoldWhiteLabel:
+                                text: "Espaciado m\u00e1ximo"
+
+                            Slider:
+                                id: slid_emax
+                                value: 0
+                                min: 0
+                                max: 128
+                                step: 1
+                                disabled: True
+                                value_track: True
+                                value_track_color: (1.0, 0.9412, 0.7922, 1)
+
+                            MiniBoldWhiteLabel:
+                                text: str(slid_emax.value)
+
+                BoxLayout:
+                    cols: 3
+                    orientation: 'horizontal'
+                    size_hint_y: 0.2
+
+                    MediumWhiteLabel:
+                        size_hint_x: 0.35
+                        text: "N\u00famero repeticiones"
+
+                    Slider:
+                        id: slid_rep
+                        value: 16
+                        min: 1
+                        max: 64
+                        step: 1
+                        value_track: True
+                        value_track_color: (1.0, 0.9412, 0.7922, 1)
+
+                    MiniBoldWhiteLabel:
+                        size_hint_x: 0.2
+                        text: str(slid_rep.value)
+
+
+    BoxLayout:
+        orientation: 'horizontal'
+        cols: 3
+        size_hint_y: 0.05
 
         BoxLayout:
-            size_hint_x: 0.1
+            size_hint_x: 0.3
+        Button:
+            size_hint_x: 0.4
+            text: "Confirmar"
+            background_color: (0.4, 0.6078, 0.5647, 1)
+            font_size: 18
+            on_press:
+                self.background_color = (0.2706, 0.4118, 0.3804, 1)
+                self.color = (1, 1, 1, 1)
+            on_release:
+                self.background_color = (0.4, 0.6078, 0.5647, 1)
+                self.color = (0, 0, 0, 1)
+                root.confirmar(self)
+        BoxLayout:
+            size_hint_x: 0.3
 
 
 
@@ -1680,7 +1956,7 @@
                                 size_hint_x: 0.7
                                 text_size: (200, None)
                                 halign: 'center'
-                                on_text: root.actualizar_exps(self.text)
+                                on_text: root.actualizar_exps(et_spinner4.text, self.text)
 
                             BoxLayout:
                                 size_hint_x: 0.15
