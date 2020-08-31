@@ -150,6 +150,11 @@ class AbrirPrHijosComportamiento:
             sm.remove_widget(screen)
         except ScreenManagerException:
             pass
+        try:
+            screen = sm.get_screen("cambiog_{0}".format(self.proyecto.nombre))
+            sm.remove_widget(screen)
+        except ScreenManagerException:
+            pass
 
 
 class DropdownAbrirProyecto(DropdownComportamiento):
@@ -321,13 +326,23 @@ class DropdownExperimentosOpciones(DropDown):
         sm.switch_to(screen)
 
 
-class DropdownGraficasInteractivas(DropdownComportamiento):
-    def __init__(self, **kwargs):
+class DropdownGraficasAvanzadas(DropdownComportamiento):
+    def __init__(self, proyecto, **kwargs):
         super().__init__(**kwargs)
-        btn = Button(text="Work in progress!", size_hint_y=None, height=50, background_normal='',
+        self.proyecto = proyecto
+        btn = Button(text="Cambiar tipo gr\u00e1fica", size_hint_y=None, height=50, background_normal='',
                      background_down='', background_color=(0.4, 0.6078, 0.5647, 1))
         btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+        btn.bind(on_release=self.soltar_cambiog)
         self.add_widget(btn)
+
+    def soltar_cambiog(self, btn):
+        try:
+            screen = sm.get_screen("cambiog_{0}".format(self.proyecto.nombre))
+        except ScreenManagerException:
+            screen = CambiarGraficaScreen(self.proyecto, name="cambiog_{0}".format(self.proyecto.nombre))
+            sm.add_widget(screen)
+        sm.switch_to(screen)
 
 
 class DropdownTeoriaAlgortimos(DropdownComportamiento):
@@ -699,16 +714,19 @@ class AbrirProyectoLayout(BoxLayout):
         self.label_nombrepr.text = self.proyecto.nombre
         self.filechooser.rootpath = proyecto.ruta
         self.dpdex = DropdownExperimentos(self.proyecto)
-        self.dpdgi = DropdownGraficasInteractivas()
+        self.dpdga = DropdownGraficasAvanzadas(self.proyecto)
         self.dpdta = DropdownTeoriaAlgortimos(self.proyecto)
         for graf in self.proyecto.graficas_abiertas:
             self.add_pest(graf)
+        if len(self.proyecto.graficas_abiertas) > 0:
+            self.panel_graficas.default_tab = self.panel_graficas.tab_list[0]
+            self.proyecto.recargar_imagenes = False
 
     def soltar_dpdex(self, instancia):
         self.dpdex.open(instancia)
 
-    def soltar_dpdgi(self, instancia):
-        self.dpdgi.open(instancia)
+    def soltar_dpdga(self, instancia):
+        self.dpdga.open(instancia)
 
     def soltar_dpdta(self, instancia):
         self.dpdta.open(instancia)
@@ -744,12 +762,14 @@ class AbrirProyectoLayout(BoxLayout):
     def add_pest(self, graf):
         graf_png = "{0}.png".format(graf)
         img = Image(source=graf_png, size_hint_y=0.9, allow_stretch=True)
+        if self.proyecto.recargar_imagenes:
+            img.reload()
         bxlv = BoxLayout(orientation="vertical")
         bxlh = BoxLayout(orientation="horizontal", size_hint_y=0.1)
         btn = Button(text="Abrir csv en navegador", size_hint_x=0.3, background_normal='', background_down='',
-                     background_color=(0.4, 0.6078, 0.5647, 1))
+                     background_color=(0.4, 0.6078, 0.5647, 1), font_size=18)
         btn_cerrar = Button(text="Cerrar pestaña", size_hint_x=0.3, background_normal='', background_down='',
-                            background_color=(0.949, 0.4667, 0.4196, 1))
+                            background_color=(0.949, 0.4667, 0.4196, 1), font_size=18)
         bxlh.add_widget(BoxLayout(size_hint_x=0.15))
         bxlh.add_widget(btn)
         bxlh.add_widget(BoxLayout(size_hint_x=0.1))
@@ -765,16 +785,20 @@ class AbrirProyectoLayout(BoxLayout):
         btn_cerrar.bind(on_release=self.soltar_cerrarp)
         tbdp.add_widget(bxlv)
         self.panel_graficas.add_widget(tbdp)
-        if len(self.panel_graficas.tab_list) == 1:
-            self.panel_graficas.switch_to(tbdp)
 
     def seleccionar_archivo(self, seleccion):
         if len(seleccion) > 0:
             arch = seleccion[0]
             if os.path.isfile(arch):
                 graf = arch.split('.')[0]
-                self.proyecto.graficas_abiertas.append(graf)
-                self.add_pest(graf)
+                if graf in self.proyecto.graficas_abiertas:
+                    for pest in self.panel_graficas.tab_list:
+                        if pest.text == os.path.basename("{0}.png".format(graf)):
+                            self.panel_graficas.switch_to(pest)
+                else:
+                    self.proyecto.graficas_abiertas.append(graf)
+                    self.add_pest(graf)
+                    self.panel_graficas.switch_to(self.panel_graficas.tab_list[0])
 
     @staticmethod
     def volver_a_principal(inst):
@@ -956,7 +980,7 @@ class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
     def actualizar_tipoexps(self, tipo_alg, nombre_alg):
         if tipo_alg == "búsqueda" and nombre_alg != "lineal":
             try:
-                self.tipoexp_spinner.values.remove("Lista Aleatoria") 
+                self.tipoexp_spinner.values.remove("Lista Aleatoria")
                 self.tipoexp_spinner.values.remove("Lista Aleatoria Sin Repetición")
             except ValueError:
                 pass
@@ -1318,6 +1342,76 @@ class EliminarExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
         btn.color = (0, 0, 0, 1)
 
 
+class CambiarGraficaLayout(GridLayout, AbrirPrHijosComportamiento):
+    rows = 2
+    et_spinner = ObjectProperty()
+    paq_spinner = ObjectProperty()
+    exp_spinner = ObjectProperty()
+    tipog_spinner = ObjectProperty()
+    estilog_spinner = ObjectProperty()
+    interpg_spinner = ObjectProperty()
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(proyecto=proyecto, **kwargs)
+        self.proyecto = proyecto
+        self.et_spinner.values = self.proyecto.espacios_trabajo.keys()
+        self.tipog_spinner.values = ["Línea básica", "Línea apilada", "Barra apilada", "Barra horizontal",
+                                     "Barra básica"]
+        self.tipog_spinner.text = self.tipog_spinner.values[0]
+        self.estilog_spinner.values = ["Por defecto", "Oscuro", "Neón", "Solarizado oscuro", "Solarizado claro",
+                                       "Claro", "Limpio", "Rojo-azul", "Oscuro teñido", "Claro teñído",
+                                       "Turquesa", "Verde claro", "Verde oscuro", "Oscuro verde-azul", "Azul"]
+        self.estilog_spinner.text = self.estilog_spinner.values[0]
+        self.interpg_spinner.values = ["Ninguna", "Cúbica", "Cuadrática", "Lagrange", "Trigonométrica",
+                                       "Polinómica de Hermite"]
+        self.interpg_spinner.text = self.interpg_spinner.values[0]
+        if len(self.et_spinner.values) == 0:
+            self.et_spinner.text = "No hay ningún espacio de trabajo"
+            self.paq_spinner.text = "No hay ningún paquete"
+            self.exp_spinner.text = "No hay ningún experimento"
+        else:
+            self.et_spinner.text = self.et_spinner.values[0]
+            self.actualizar_paqs(self.et_spinner.text)
+            self.actualizar_exps(self.et_spinner.text, self.paq_spinner.text)
+
+    def actualizar_paqs(self, nombre_et):
+        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        if len(self.paq_spinner.values) == 0:
+            self.paq_spinner.text = "No hay ningún paquete"
+        else:
+            self.paq_spinner.text = self.paq_spinner.values[0]
+
+    def actualizar_exps(self, nombre_et, nombre_paq):
+        self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
+        if len(self.exp_spinner.values) == 0:
+            self.exp_spinner.text = "No hay ningún experimento"
+        else:
+            self.exp_spinner.text = self.exp_spinner.values[0]
+
+    def confirmar(self, inst):
+        if len(self.exp_spinner.values) == 0:
+            popup = Popup(title='Error cambiando tipo de gr\u00e1fica', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Ningún experimento v\u00e1lido',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+        else:
+            self.proyecto.cambiar_tipo_grafica(self.et_spinner.text, self.paq_spinner.text, self.exp_spinner.text,
+                                               self.tipog_spinner.text.casefold(), self.estilog_spinner.text.casefold(),
+                                               self.interpg_spinner.text.casefold())
+            popup = Popup(title='Gr\u00e1fica cambiada', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                          title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Tipo de gr\u00e1fica cambiada',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+
+            self.recargar_proyecto()
+
+
 # Ventanas
 
 
@@ -1379,6 +1473,12 @@ class EliminarExperimentoScreen(Screen):
     def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(EliminarExperimentoLayout(proyecto))
+
+
+class CambiarGraficaScreen(Screen):
+    def __init__(self, proyecto: Proyecto, **kw):
+        super().__init__(**kw)
+        self.add_widget(CambiarGraficaLayout(proyecto))
 
 
 # Aplicación
