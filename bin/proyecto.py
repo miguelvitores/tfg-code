@@ -52,11 +52,16 @@ class Proyecto:
         eliminar_recursivamente(os.path.join(self.ruta, nombre_et, nombre_p))
         self.ult_modif = time.asctime(time.localtime(time.time()))
 
-    def crear_experimento(self, nombre_et, nombre_p, nombre_exp, testdata):
+    def crear_experimento(self, nombre_et, nombre_p, nombre_exp, testdata, tupla_pg):
+        barra_progreso = tupla_pg[0]
+        texto_popup = tupla_pg[1]
         ruta_exp = os.path.join(self.ruta, nombre_et, nombre_p, nombre_exp)
         self.espacios_trabajo[nombre_et][nombre_p][nombre_exp] = testdata
+        texto_popup.text = "Serializando objecto experimento..."
         serializa(testdata, "{0}.pickle".format(ruta_exp))
+        barra_progreso.value = 52.5
         self.graficas_abiertas.append(ruta_exp)
+        texto_popup.text = "Creando gráfica..."
         graf = pygal.Bar()
         if testdata.algoritmo.tipo == 0:
             tipo_alg = "búsqueda"
@@ -70,8 +75,13 @@ class Proyecto:
         graf.add("espacio_utilizado", [a.espacio_utilizado for a in testdata.resultados.values()])
         graf.add("comparaciones", [a.comparaciones for a in testdata.resultados.values()])
         graf.add("intercambios", [a.intercambios for a in testdata.resultados.values()])
+        barra_progreso.value = 55
+        texto_popup.text = "Creando archivo png..."
         graf.render_to_png("{0}.png".format(ruta_exp))
+        barra_progreso.value = 97.5
+        texto_popup.text = "Serializando objecto gráfica..."
         serializa(graf, "{0}_graf.pickle".format(ruta_exp))
+        barra_progreso.value = 100
         self.ult_modif = time.asctime(time.localtime(time.time()))
 
     def eliminar_experimento(self, nombre_et, nombre_p, nombre_exp):
@@ -87,11 +97,14 @@ class Proyecto:
             self.graficas_abiertas.remove(ruta_exp)
         self.ult_modif = time.asctime(time.localtime(time.time()))
 
-    def cambiar_tipo_grafica(self, nombre_et, nombre_p, nombre_exp, nombre_tipog, estilog, interpg):
+    def cambiar_tipo_grafica(self, nombre_et, nombre_p, nombre_exp, nombre_tipog, estilog, interpg, progreso, texto):
+        texto.text = "Creando gráfica..."
         ruta_exp = os.path.join(self.ruta, nombre_et, nombre_p, nombre_exp)
         graf_anterior = c.carga("{0}_graf.pickle".format(ruta_exp))
+        progreso.value = 10
 
         estilo = self.establecer_estilo(estilog)
+        progreso.value = 15
         if nombre_tipog == "línea básica":
             graf = pygal.Line(fill=False, style=estilo)
         elif nombre_tipog == "línea apilada":
@@ -102,21 +115,29 @@ class Proyecto:
             graf = pygal.HorizontalBar(fill=False, style=estilo)
         else:
             graf = pygal.Bar(fill=False, style=estilo)
+        progreso.value = 20
 
         if nombre_tipog.find("barra") == -1:
             self.establecer_interpolacion(graf, interpg)
+        progreso.value = 25
 
         graf.title = graf_anterior.title
         graf.x_labels = graf_anterior.x_labels
         graf.x_title = "Tamaño listas"
         graf.raw_series = graf_anterior.raw_series
+        progreso.value = 30
+        texto.text = "Creando archivo png..."
         graf.render_to_png("{0}.png".format(ruta_exp))
+        progreso.value = 90
+        texto.text = "Serializando objeto gráfica..."
         serializa(graf, "{0}_graf.pickle".format(ruta_exp))
+        progreso.value = 95
         if ruta_exp in self.graficas_abiertas:
             self.graficas_abiertas.remove(ruta_exp)
         self.graficas_abiertas.append(ruta_exp)
         self.recargar_imagenes = True
         self.ult_modif = time.asctime(time.localtime(time.time()))
+        progreso.value = 100
 
     @staticmethod
     def establecer_interpolacion(graf, interpg):

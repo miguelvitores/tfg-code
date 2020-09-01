@@ -22,9 +22,9 @@ class TestData(metaclass=abc.ABCMeta):
         self.iter_an = 0
 
     @abc.abstractmethod
-    def analizar(self):
+    def analizar(self, tupla_pg):
         """Se analizarán distintas listas con el tamaño en el rango seleccionado. Estas podrán ser
-        de varios tipos"""
+        de varios tipos. Recibe como argumento una tupla para medir el progreso de la operación"""
 
     @abc.abstractmethod
     def crear_lista(self, n):
@@ -52,14 +52,14 @@ class TestData(metaclass=abc.ABCMeta):
         comprep(repet)
         self.repet = repet
 
-    def recalcular(self, n_veces=1):
+    def recalcular(self, tupla_pg, n_veces=1):
         """Realiza de nuevo el análisis del testdata y hace la media"""
         if len(self.resultados) == 0:
-            self.analizar()
+            self.analizar(tupla_pg)
             n_veces -= 1
         resultados_tmp = dict(self.resultados)
         for i in range(n_veces):
-            self.analizar()
+            self.analizar(tupla_pg)
             for k in resultados_tmp.keys():
                 resultados_tmp.get(k, Analysis).sumar(self.resultados.get(k, Analysis))
                 resultados_tmp.get(k, Analysis).media(2)
@@ -70,17 +70,25 @@ class TestDataBusqueda(TestData):
     def __init__(self, algoritmo: Busqueda, rangot: RangoTam, rangov: RangoVal, repet=1):
         super().__init__(algoritmo, rangot, rangov, repet)
 
-    def analizar(self):
+    def analizar(self, tupla_pg):
+        barra_progreso = tupla_pg[0]
+        texto_popup = tupla_pg[1]
+        porcentaje_analisis = 50
+        incremento_barra_por_repeticion = porcentaje_analisis / (self.repet * (self.rangot.tmax - self.rangot.tmin) /
+                                                                 self.rangot.prec)
+
         self.iter_an += 1
         suma = self.rangot.tmin
         while suma < self.rangot.tmax + 1:
             n = math.floor(suma)
             an = Analysis()
+            texto_popup.text = "Analizando lista de tamaño {0}".format(n)
             lista = self.crear_lista(n)
 
             for i in range(self.repet):
                 r = random.randint(0, n - 1)
                 self.algoritmo.analizar(lista, an, lista[r])
+                barra_progreso.value += incremento_barra_por_repeticion
 
             an.media(self.repet)
             self.resultados[n] = an
@@ -95,15 +103,23 @@ class TestDataOrdenacion(TestData):
     def __init__(self, algoritmo: Ordenacion, rangot: RangoTam, rangov: RangoVal, repet=1):
         super().__init__(algoritmo, rangot, rangov, repet)
 
-    def analizar(self):
+    def analizar(self, tupla_pg):
+        barra_progreso = tupla_pg[0]
+        texto_popup = tupla_pg[1]
+        porcentaje_analisis = 50
+        incremento_barra_por_repeticion = porcentaje_analisis / (self.repet * (self.rangot.tmax - self.rangot.tmin) /
+                                                                 self.rangot.prec)
+
         suma = self.rangot.tmin
         while suma < self.rangot.tmax + 1:
             n = math.floor(suma)
             an = Analysis()
+            texto_popup.text = "Analizando listas de tamaño {0}".format(n)
 
             for i in range(self.repet):
                 lista = self.crear_lista(n)
                 self.algoritmo.analizar(lista, an)
+                barra_progreso.value += incremento_barra_por_repeticion
 
             an.media(self.repet)
             self.resultados[n] = an

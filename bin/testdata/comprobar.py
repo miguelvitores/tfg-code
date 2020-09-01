@@ -1,7 +1,7 @@
 import bin.excepciones as ex
 from bin.testdata.rango import RangoTam, RangoVal
 
-repet_max = 64
+repet_max = 256
 
 
 def comprobar_rango(rangot: RangoTam, rangov: RangoVal):
@@ -21,4 +21,4 @@ def comprobar_rango(rangot: RangoTam, rangov: RangoVal):
 def comprobar_repeticiones(repet: int):
     if 1 < repet > repet_max:
         raise ex.NumeroRepeticionesNoValidas("No se pueden asignar un número de repeticiones inferior a 1 o superior"
-                                             " a 64")
+                                             " a {0}".format(repet_max))

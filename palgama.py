@@ -13,6 +13,7 @@ from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.uix.image import Image
 from kivy.uix.tabbedpanel import TabbedPanelItem
+from kivy.uix.progressbar import ProgressBar
 from pygal.view import Box
 
 from bin.serializar import ajustes, eliminar_recursivamente
@@ -40,6 +41,7 @@ import bin.cargar as cargar
 import bin.testdata.td_tipos as tdt
 import os
 import pygal
+import threading
 
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 Config.set('graphics', 'resizable', 0)
@@ -1084,18 +1086,29 @@ class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
                 else:
                     td = TestDataOrdenacionLAleatoriaSR(alg, rt, rv, rep)
 
-            td.analizar()
-            self.proyecto.crear_experimento(et, paq, exp, td)
+            pg = ProgressBar(size_hint_y=0.8)
+            texto = Label(font_name="fonts/FiraSans-Bold", font_size=12, color=(1, 1, 1, 1), size_hint_y=0.2)
+            bl = BoxLayout(orientation='vertical')
+            bl.add_widget(pg)
+            bl.add_widget(texto)
+            pgpopup = Popup(title='Progreso de la operaci\u00f3n', separator_color=(0.7725, 0.9882, 0.9412, 1),
+                            title_color=(0.7725, 0.9882, 0.9412, 1), title_font="fonts/FiraSans-ThinItalic",
+                            content=bl, size_hint=(None, None), size=(350, 100))
+            pgpopup.bind(on_dismiss=self.proceso_completado)
+            pgpopup.open()
 
-            popup = Popup(title='Experimento creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
-                          title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
-                          content=Label(text='Experimento creado correctamente',
-                                        font_name="fonts/FiraSans-SemiBold",
-                                        color=(1, 1, 1, 1)
-                                        ), size_hint=(None, None), size=(350, 100))
-            popup.open()
+            hilopce = HiloProcesoCrearExperimento(self.proyecto, et, paq, exp, td, pg, texto)
+            hilopce.start()
 
-            self.recargar_proyecto()
+    def proceso_completado(self, inst):
+        self.recargar_proyecto()
+        popup = Popup(title='Experimento creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                      title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=Label(text='Experimento creado correctamente',
+                                    font_name="fonts/FiraSans-SemiBold",
+                                    color=(1, 1, 1, 1)
+                                    ), size_hint=(None, None), size=(350, 100))
+        popup.open()
 
     @staticmethod
     def es_nombre_invalido(exp):
@@ -1359,7 +1372,7 @@ class CambiarGraficaLayout(GridLayout, AbrirPrHijosComportamiento):
                                      "Barra básica"]
         self.tipog_spinner.text = self.tipog_spinner.values[0]
         self.estilog_spinner.values = ["Por defecto", "Oscuro", "Neón", "Solarizado oscuro", "Solarizado claro",
-                                       "Claro", "Limpio", "Rojo-azul", "Oscuro teñido", "Claro teñído",
+                                       "Claro", "Limpio", "Rojo-azul", "Oscuro teñido", "Claro teñido",
                                        "Turquesa", "Verde claro", "Verde oscuro", "Oscuro verde-azul", "Azul"]
         self.estilog_spinner.text = self.estilog_spinner.values[0]
         self.interpg_spinner.values = ["Ninguna", "Cúbica", "Cuadrática", "Lagrange", "Trigonométrica",
@@ -1398,18 +1411,75 @@ class CambiarGraficaLayout(GridLayout, AbrirPrHijosComportamiento):
                                         ), size_hint=(None, None), size=(350, 100))
             popup.open()
         else:
-            self.proyecto.cambiar_tipo_grafica(self.et_spinner.text, self.paq_spinner.text, self.exp_spinner.text,
-                                               self.tipog_spinner.text.casefold(), self.estilog_spinner.text.casefold(),
-                                               self.interpg_spinner.text.casefold())
-            popup = Popup(title='Gr\u00e1fica cambiada', separator_color=(0.5451, 0.9529, 0.4235, 1),
-                          title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
-                          content=Label(text='Tipo de gr\u00e1fica cambiada',
-                                        font_name="fonts/FiraSans-SemiBold",
-                                        color=(1, 1, 1, 1)
-                                        ), size_hint=(None, None), size=(350, 100))
-            popup.open()
+            pg = ProgressBar(size_hint_y=0.8)
+            texto = Label(font_name="fonts/FiraSans-Bold", font_size=12, color=(1, 1, 1, 1), size_hint_y=0.2)
+            bl = BoxLayout(orientation='vertical')
+            bl.add_widget(pg)
+            bl.add_widget(texto)
+            pgpopup = Popup(title='Progreso de la operaci\u00f3n', separator_color=(0.7725, 0.9882, 0.9412, 1),
+                            title_color=(0.7725, 0.9882, 0.9412, 1), title_font="fonts/FiraSans-ThinItalic",
+                            content=bl, size_hint=(None, None), size=(350, 100))
+            pgpopup.bind(on_dismiss=self.proceso_completado)
+            pgpopup.open()
 
-            self.recargar_proyecto()
+            hilopccg = HiloProcesoConfirmarCambiarGrafica(self.proyecto, self.et_spinner.text, self.paq_spinner.text,
+                                                          self.exp_spinner.text, self.tipog_spinner.text.casefold(),
+                                                          self.estilog_spinner.text.casefold(),
+                                                          self.interpg_spinner.text.casefold(), pg, texto)
+            hilopccg.start()
+
+    def proceso_completado(self, inst):
+        self.recargar_proyecto()
+        popup = Popup(title='Gr\u00e1fica cambiada', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                      title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=Label(text='Tipo de gr\u00e1fica cambiada',
+                                    font_name="fonts/FiraSans-SemiBold",
+                                    color=(1, 1, 1, 1)
+                                    ), size_hint=(None, None), size=(350, 100))
+        popup.open()
+
+
+# Hilos
+
+class HiloProcesoCrearExperimento(threading.Thread):
+    def __init__(self, proyecto, et, paq, exp, td, pg, texto):
+        super().__init__()
+        self.proyecto = proyecto
+        self.et = et
+        self.paq = paq
+        self.exp = exp
+        self.td = td
+        self.pg = pg
+        self.texto = texto
+
+    def run(self):
+        self.texto.text = "Comenzando"
+        tupla_pg = (self.pg, self.texto)
+        self.td.analizar(tupla_pg)
+        self.proyecto.crear_experimento(self.et, self.paq, self.exp, self.td, tupla_pg)
+        self.texto.color = (0.5451, 0.9529, 0.4235, 1)
+        self.texto.text = "Completado"
+
+
+class HiloProcesoConfirmarCambiarGrafica(threading.Thread):
+    def __init__(self, proyecto, et, paq, exp, tipog, estilog, interpg, pg, texto):
+        super().__init__()
+        self.proyecto = proyecto
+        self.et = et
+        self.paq = paq
+        self.exp = exp
+        self.tipog = tipog
+        self.estilog = estilog
+        self.interpg = interpg
+        self.pg = pg
+        self.texto = texto
+
+    def run(self):
+        self.texto.text = "Comenzando"
+        self.proyecto.cambiar_tipo_grafica(self.et, self.paq, self.exp, self.tipog, self.estilog, self.interpg, self.pg,
+                                           self.texto)
+        self.texto.color = (0.5451, 0.9529, 0.4235, 1)
+        self.texto.text = "Completado"
 
 
 # Ventanas
