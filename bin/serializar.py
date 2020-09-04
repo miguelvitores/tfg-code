@@ -1,27 +1,16 @@
 import pickle
 import glob
 import os
-import bin.cargar as cargar
+import shutil
 
 fichero_ajustes = os.path.join("data", "ajustes.pickle")
+carpeta_pr = os.path.join("data", "proyectos")
+carpeta_pr_comp = os.path.join("data", "pr_comp")
+obj_pr = os.path.join("obj_proyecto.pickle")
 
 
 def ajustes(a):
     serializa(a, fichero_ajustes)
-
-
-def testdata(td):
-    if td.algoritmo.tipo:
-        [tipos, nombres] = cargar.ordenacion()
-    else:
-        [tipos, nombres] = cargar.busqueda()
-    tipo = tipos[td.algoritmo.tipo]
-    nombre = nombres[td.algoritmo.nombre]
-    dir_testdata = os.path.join("data", "testdata", "{0}".format(tipo), "{0}".format(nombre))
-    if not os.path.isdir(dir_testdata):
-        os.makedirs(dir_testdata)
-    fichero_testdata = 'testdata_{0}.pickle'.format(len(glob.glob(os.path.join(dir_testdata, "testdata*"))))
-    serializa(td, os.path.join(dir_testdata, fichero_testdata))
 
 
 def serializa(objeto, nombre_fichero):
@@ -36,3 +25,15 @@ def eliminar_recursivamente(ruta):
         for file in f[2]:
             os.remove(os.path.join(f[0], file))
     os.rmdir(ruta)
+
+
+def comprimir_proyecto(proyecto):
+    ruta = proyecto.ruta
+    serializa(proyecto, os.path.join(ruta, obj_pr))
+    shutil.make_archive(os.path.join(carpeta_pr_comp, proyecto.nombre), 'zip', ruta)
+    os.remove(os.path.join(ruta, obj_pr))
+
+
+def descomprimir_proyecto(pr, ruta_desc):
+    shutil.unpack_archive(ruta_desc, pr.ruta, 'zip')
+    os.remove(os.path.join(carpeta_pr, pr.nombre, obj_pr))

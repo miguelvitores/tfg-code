@@ -14,9 +14,10 @@ from kivy.lang import Builder
 from kivy.uix.image import Image
 from kivy.uix.tabbedpanel import TabbedPanelItem
 from kivy.uix.progressbar import ProgressBar
+from kivy.uix.filechooser import FileChooserIconView
 from pygal.view import Box
 
-from bin.serializar import ajustes, eliminar_recursivamente
+from bin.serializar import ajustes, eliminar_recursivamente, comprimir_proyecto, descomprimir_proyecto
 from bin.usuarios import Alumno, Profesor
 from bin.proyecto import Proyecto
 from bin.testdata.rango import RangoTam, RangoVal
@@ -159,6 +160,33 @@ class AbrirPrHijosComportamiento:
             pass
 
 
+class BarraProgresoComportamiento(AbrirPrHijosComportamiento):
+    def __init__(self, proyecto: Proyecto):
+        super().__init__(proyecto)
+        self.pg = ProgressBar(size_hint_y=0.8)
+        self.texto = Label(font_name="fonts/FiraSans-Bold", font_size=12, color=(1, 1, 1, 1), size_hint_y=0.2)
+
+    def proceso_completado(self, inst):
+        self.recargar_proyecto()
+        popup = Popup(title='Experimento creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                      title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=Label(text='Experimento creado correctamente',
+                                    font_name="fonts/FiraSans-SemiBold",
+                                    color=(1, 1, 1, 1)
+                                    ), size_hint=(None, None), size=(350, 100))
+        popup.open()
+
+    def mostrar_barra_progreso(self):
+        bl = BoxLayout(orientation='vertical')
+        bl.add_widget(self.pg)
+        bl.add_widget(self.texto)
+        pgpopup = Popup(title='Progreso de la operaci\u00f3n', separator_color=(0.7725, 0.9882, 0.9412, 1),
+                        title_color=(0.7725, 0.9882, 0.9412, 1), title_font="fonts/FiraSans-ThinItalic",
+                        content=bl, size_hint=(None, None), size=(350, 100))
+        pgpopup.bind(on_dismiss=self.proceso_completado)
+        pgpopup.open()
+
+
 class DropdownAbrirProyecto(DropdownComportamiento):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -170,7 +198,126 @@ class DropdownAbrirProyecto(DropdownComportamiento):
         btn = Button(text="Importar Proyecto", size_hint_y=None, height=50, background_normal='', background_down='',
                      background_color=(0.4, 0.6078, 0.5647, 1))
         btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+        btn.bind(on_release=self.importar_proyecto)
         self.add_widget(btn)
+        self.fc = FileChooserIconView(rootpath=os.path.join("data", "pr_comp"), filters=["*.zip"], filter_dirs=True)
+        self.proyecto = None
+        self.ruta_desc = None
+
+    def importar_proyecto(self, btn):
+        if len(self.fc.files) > 0:
+            boxroot = BoxLayout(orientation='vertical', rows=3)
+            boxroot.add_widget(self.fc)
+            boxh = BoxLayout(orientation='horizontal', cols=2, size_hint_y=None, height=30)
+            boton_si = Button(text='Importar', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.5451, 0.9529, 0.4235, 1))
+            boton_no = Button(text='Cancelar', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
+            boxh.add_widget(boton_si)
+            boxh.add_widget(boton_no)
+            boxroot.add_widget(boxh)
+            popup = Popup(title='Elige el proyeto a importar',
+                          separator_color=(0.4, 0.6078, 0.5647, 1),
+                          title_color=(0.4, 0.6078, 0.5647, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=boxroot, size_hint=(None, None), size=(500, 450))
+            popup.open()
+            boton_si.bind(on_press=self.presionar_importar_proyecto)
+            boton_no.bind(on_press=self.presionar_cancelar_importar_proyecto)
+            boton_si.bind(on_release=self.soltar_importar_proyecto)
+            boton_no.bind(on_release=self.soltar_cancelar_importar_proyecto)
+            boton_si.bind(on_release=popup.dismiss)
+            boton_no.bind(on_release=popup.dismiss)
+        else:
+            popup = Popup(title='Ning\u00fan archivo zip', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Ning\u00fan archivo zip en la carpeta data/pr_comp/',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(450, 100))
+            popup.open()
+
+    @staticmethod
+    def presionar_importar_proyecto(btn):
+        btn.background_color = (0.2667, 0.9059, 0.0745, 1)
+
+    def soltar_importar_proyecto(self, btn):
+        btn.background_color = (0.5451, 0.9529, 0.4235, 1)
+
+        self.ruta_desc = os.path.join("data", "pr_comp", self.fc.selection[0])
+        self.proyecto = cargar.obtener_obj_proyecto(self.ruta_desc)
+
+        if self.proyecto.nombre in [p.nombre for p in proyectos]:
+            box = BoxLayout(orientation='horizontal', cols=2)
+            boton_si = Button(text='Sobrescribir', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.5451, 0.9529, 0.4235, 1))
+            boton_no = Button(text='Cancelar', font_name="fonts/FiraSans-SemiBold",
+                              color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
+            box.add_widget(boton_si)
+            box.add_widget(boton_no)
+            popup = Popup(title='¿Desea sobrescribir el proyecto: {}?'.format(self.proyecto.nombre),
+                          separator_color=(0.4, 0.6078, 0.5647, 1),
+                          title_color=(0.4, 0.6078, 0.5647, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=box, size_hint=(None, None), size=(450, 125))
+            popup.open()
+            boton_si.bind(on_press=self.presionar_sobrescribir_proyecto)
+            boton_no.bind(on_press=self.presionar_cancelar_sobrescribir_proyecto)
+            boton_si.bind(on_release=self.soltar_descomprimir_proyecto)
+            boton_no.bind(on_release=self.soltar_cancelar_sobrescribir_proyecto)
+            boton_si.bind(on_release=popup.dismiss)
+            boton_no.bind(on_release=popup.dismiss)
+
+        else:
+            self.confirmar()
+
+    def confirmar(self):
+        proyectos_mismo_nombre = [p for p in proyectos if p.nombre == self.proyecto.nombre]
+        if len(proyectos_mismo_nombre) != 0:
+            proyectos.remove(proyectos_mismo_nombre[0])
+            eliminar_recursivamente(proyectos_mismo_nombre[0].ruta)
+        proyectos.insert(0, self.proyecto)
+        descomprimir_proyecto(self.proyecto, self.ruta_desc)
+
+        popup = Popup(title='Proyecto importado', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                      title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=Label(text='Proyecto "{}" importado con éxito'.format(self.proyecto.nombre),
+                                    font_name="fonts/FiraSans-SemiBold",
+                                    color=(1, 1, 1, 1)
+                                    ), size_hint=(None, None), size=(450, 100))
+        popup.open()
+        sm.switch_to(sm.get_screen("principal_help"))
+        sm.remove_widget(sm.get_screen("principal"))
+        sm.add_widget(PrincipalScreen(name="principal"))
+        sm.switch_to(sm.get_screen("principal"))
+        sm.remove_widget(sm.get_screen("abrirpr_{0}".format(self.proyecto.nombre)))
+
+
+    @staticmethod
+    def presionar_cancelar_importar_proyecto(btn):
+        btn.background_color = (0.8824, 0.1451, 0.0784, 1)
+        btn.color = (1, 1, 1, 1)
+
+    @staticmethod
+    def soltar_cancelar_importar_proyecto(btn):
+        btn.background_color = (0.949, 0.4667, 0.4196, 1)
+        btn.color = (0, 0, 0, 1)
+
+    @staticmethod
+    def presionar_sobrescribir_proyecto(btn):
+        btn.background_color = (0.2667, 0.9059, 0.0745, 1)
+
+    def soltar_descomprimir_proyecto(self, btn):
+        btn.background_color = (0.5451, 0.9529, 0.4235, 1)
+        self.confirmar()
+
+    @staticmethod
+    def presionar_cancelar_sobrescribir_proyecto(btn):
+        btn.background_color = (0.8824, 0.1451, 0.0784, 1)
+        btn.color = (1, 1, 1, 1)
+
+    @staticmethod
+    def soltar_cancelar_sobrescribir_proyecto(btn):
+        btn.background_color = (0.949, 0.4667, 0.4196, 1)
+        btn.color = (0, 0, 0, 1)
 
 
 class DropdownProyectos(DropdownComportamiento):
@@ -388,24 +535,42 @@ class PrincipalLayout(GridLayout):
         self.dpdep.bind(on_select=self.llamada_dpdep)
         self.dpdelp.bind(on_select=self.llamada_dpdelp)
         self.proyecto_a_eliminar = None
+        self.proyecto_a_comprimir = None
 
     @staticmethod
     def llamada_dpdab(instancia, nombre):
-        pr = [p for p in proyectos if p.nombre is nombre][0]
-        try:
-            screen = sm.get_screen("abrirpr_{0}".format(nombre))
-        except ScreenManagerException:
-            screen = AbrirProyectoScreen(pr, name="abrirpr_{0}".format(nombre))
-            sm.add_widget(screen)
+        if nombre.casefold() != "importar proyecto":
+            pr = [p for p in proyectos if p.nombre == nombre][0]
+            try:
+                screen = sm.get_screen("abrirpr_{0}".format(nombre))
+            except ScreenManagerException:
+                screen = AbrirProyectoScreen(pr, name="abrirpr_{0}".format(nombre))
+                sm.add_widget(screen)
 
-        proyectos.remove(pr)
-        proyectos.insert(0, pr)
-        Window.maximize()
-        sm.switch_to(screen)
+            proyectos.remove(pr)
+            proyectos.insert(0, pr)
+            Window.maximize()
+            sm.switch_to(screen)
 
-    @staticmethod
-    def llamada_dpdcp(instancia, nombre):
-        print(instancia, nombre)
+    def llamada_dpdcp(self, instancia, nombre):
+        self.proyecto_a_comprimir = [p for p in proyectos if p.nombre is nombre][0]
+        box = BoxLayout(orientation='horizontal', cols=2)
+        boton_si = Button(text='Comprimir', font_name="fonts/FiraSans-SemiBold",
+                          color=(0, 0, 0, 1), background_color=(0.5451, 0.9529, 0.4235, 1))
+        boton_no = Button(text='Cancelar', font_name="fonts/FiraSans-SemiBold",
+                          color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
+        box.add_widget(boton_si)
+        box.add_widget(boton_no)
+        popup = Popup(title='¿Desea comprimir el proyecto: {}?'.format(nombre), separator_color=(0.4, 0.6078, 0.5647, 1),
+                      title_color=(0.4, 0.6078, 0.5647, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=box, size_hint=(None, None), size=(450, 125))
+        popup.open()
+        boton_si.bind(on_press=self.presionar_comprimir_proyecto)
+        boton_no.bind(on_press=self.presionar_cancelar_comprimir_proyecto)
+        boton_si.bind(on_release=self.soltar_comprimir_proyecto)
+        boton_no.bind(on_release=self.soltar_cancelar_comprimir_proyecto)
+        boton_si.bind(on_release=popup.dismiss)
+        boton_no.bind(on_release=popup.dismiss)
 
     @staticmethod
     def llamada_dpdep(instancia, nombre):
@@ -427,7 +592,7 @@ class PrincipalLayout(GridLayout):
                           color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
         box.add_widget(boton_si)
         box.add_widget(boton_no)
-        popup = Popup(title='Desea eliminar el proyecto: {}?'.format(nombre), separator_color=(0.4, 0.6078, 0.5647, 1),
+        popup = Popup(title='¿Desea eliminar el proyecto: {}?'.format(nombre), separator_color=(0.4, 0.6078, 0.5647, 1),
                       title_color=(0.4, 0.6078, 0.5647, 1), title_font="fonts/FiraSans-ThinItalic",
                       content=box, size_hint=(None, None), size=(300, 125))
         popup.open()
@@ -446,6 +611,13 @@ class PrincipalLayout(GridLayout):
         btn.background_color = (0.5451, 0.9529, 0.4235, 1)
         proyectos.remove(self.proyecto_a_eliminar)
         eliminar_recursivamente(self.proyecto_a_eliminar.ruta)
+        popup = Popup(title='Proyecto eliminado', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                      title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=Label(text='Proyecto eliminado con éxito',
+                                    font_name="fonts/FiraSans-SemiBold",
+                                    color=(1, 1, 1, 1)
+                                    ), size_hint=(None, None), size=(450, 100))
+        popup.open()
         sm.switch_to(sm.get_screen("principal_help"))
         sm.remove_widget(sm.get_screen("principal"))
         sm.add_widget(PrincipalScreen(name="principal"))
@@ -458,6 +630,36 @@ class PrincipalLayout(GridLayout):
 
     @staticmethod
     def soltar_cancelar_eliminar_proyecto(btn):
+        btn.background_color = (0.949, 0.4667, 0.4196, 1)
+        btn.color = (0, 0, 0, 1)
+
+    @staticmethod
+    def presionar_comprimir_proyecto(btn):
+        btn.background_color = (0.2667, 0.9059, 0.0745, 1)
+
+    def soltar_comprimir_proyecto(self, btn):
+        btn.background_color = (0.5451, 0.9529, 0.4235, 1)
+        comprimir_proyecto(self.proyecto_a_comprimir)
+
+        popup = Popup(title='Proyecto comprimido', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                      title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=Label(text='Proyecto comprimido en la carpeta por defecto: data/pr_comp/',
+                                    font_name="fonts/FiraSans-SemiBold",
+                                    color=(1, 1, 1, 1)
+                                    ), size_hint=(None, None), size=(450, 100))
+        popup.open()
+        sm.switch_to(sm.get_screen("principal_help"))
+        sm.remove_widget(sm.get_screen("principal"))
+        sm.add_widget(PrincipalScreen(name="principal"))
+        sm.switch_to(sm.get_screen("principal"))
+
+    @staticmethod
+    def presionar_cancelar_comprimir_proyecto(btn):
+        btn.background_color = (0.8824, 0.1451, 0.0784, 1)
+        btn.color = (1, 1, 1, 1)
+
+    @staticmethod
+    def soltar_cancelar_comprimir_proyecto(btn):
         btn.background_color = (0.949, 0.4667, 0.4196, 1)
         btn.color = (0, 0, 0, 1)
 
@@ -585,7 +787,7 @@ class CrearProyectoLayout(GridLayout):
 
     @staticmethod
     def es_nombrepr_invalido(pr):
-        if len(pr) == 0 or pr.isspace():
+        if len(pr) == 0 or pr.isspace() or pr.casefold() == "importar proyecto":
             popup = Popup(title='Error creación proyecto', separator_color=(0.9059, 0.3451, 0.3529, 1),
                           title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
                           content=Label(text='Nombre del proyecto no v\u00e1lido',
@@ -929,7 +1131,7 @@ class CrearPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
         return False
 
 
-class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
+class CrearExperimentoLayout(GridLayout, BarraProgresoComportamiento):
     rows = 3
     et_spinner = ObjectProperty()
     paq_spinner = ObjectProperty()
@@ -1086,29 +1288,10 @@ class CrearExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
                 else:
                     td = TestDataOrdenacionLAleatoriaSR(alg, rt, rv, rep)
 
-            pg = ProgressBar(size_hint_y=0.8)
-            texto = Label(font_name="fonts/FiraSans-Bold", font_size=12, color=(1, 1, 1, 1), size_hint_y=0.2)
-            bl = BoxLayout(orientation='vertical')
-            bl.add_widget(pg)
-            bl.add_widget(texto)
-            pgpopup = Popup(title='Progreso de la operaci\u00f3n', separator_color=(0.7725, 0.9882, 0.9412, 1),
-                            title_color=(0.7725, 0.9882, 0.9412, 1), title_font="fonts/FiraSans-ThinItalic",
-                            content=bl, size_hint=(None, None), size=(350, 100))
-            pgpopup.bind(on_dismiss=self.proceso_completado)
-            pgpopup.open()
+            self.mostrar_barra_progreso()
 
-            hilopce = HiloProcesoCrearExperimento(self.proyecto, et, paq, exp, td, pg, texto)
+            hilopce = HiloProcesoCrearExperimento(self.proyecto, et, paq, exp, td, self.pg, self.texto)
             hilopce.start()
-
-    def proceso_completado(self, inst):
-        self.recargar_proyecto()
-        popup = Popup(title='Experimento creado', separator_color=(0.5451, 0.9529, 0.4235, 1),
-                      title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
-                      content=Label(text='Experimento creado correctamente',
-                                    font_name="fonts/FiraSans-SemiBold",
-                                    color=(1, 1, 1, 1)
-                                    ), size_hint=(None, None), size=(350, 100))
-        popup.open()
 
     @staticmethod
     def es_nombre_invalido(exp):
@@ -1166,7 +1349,7 @@ class EliminarEspacioTrabajoLayout(GridLayout, AbrirPrHijosComportamiento):
                               color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
             box.add_widget(boton_si)
             box.add_widget(boton_no)
-            popup = Popup(title='Desea eliminar el espacio de trabajo: {}?'.format(self.et_spinner.text),
+            popup = Popup(title='¿Desea eliminar el espacio de trabajo: {}?'.format(self.et_spinner.text),
                           separator_color=(0.4, 0.6078, 0.5647, 1), title_color=(0.4, 0.6078, 0.5647, 1),
                           title_font="fonts/FiraSans-ThinItalic", content=box, size_hint=(None, None), size=(350, 125))
             popup.open()
@@ -1239,7 +1422,7 @@ class EliminarPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
                               color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
             box.add_widget(boton_si)
             box.add_widget(boton_no)
-            popup = Popup(title='Desea eliminar el paquete: {}?'.format(self.paq_spinner.text),
+            popup = Popup(title='¿Desea eliminar el paquete: {}?'.format(self.paq_spinner.text),
                           separator_color=(0.4, 0.6078, 0.5647, 1), title_color=(0.4, 0.6078, 0.5647, 1),
                           title_font="fonts/FiraSans-ThinItalic", content=box, size_hint=(None, None), size=(350, 125))
             popup.open()
@@ -1322,7 +1505,7 @@ class EliminarExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
                               color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
             box.add_widget(boton_si)
             box.add_widget(boton_no)
-            popup = Popup(title='Desea eliminar el experimento: {}?'.format(self.paq_spinner.text),
+            popup = Popup(title='¿Desea eliminar el experimento: {}?'.format(self.paq_spinner.text),
                           separator_color=(0.4, 0.6078, 0.5647, 1), title_color=(0.4, 0.6078, 0.5647, 1),
                           title_font="fonts/FiraSans-ThinItalic", content=box, size_hint=(None, None), size=(350, 125))
             popup.open()
@@ -1355,7 +1538,7 @@ class EliminarExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
         btn.color = (0, 0, 0, 1)
 
 
-class CambiarGraficaLayout(GridLayout, AbrirPrHijosComportamiento):
+class CambiarGraficaLayout(GridLayout, BarraProgresoComportamiento):
     rows = 2
     et_spinner = ObjectProperty()
     paq_spinner = ObjectProperty()
@@ -1411,21 +1594,12 @@ class CambiarGraficaLayout(GridLayout, AbrirPrHijosComportamiento):
                                         ), size_hint=(None, None), size=(350, 100))
             popup.open()
         else:
-            pg = ProgressBar(size_hint_y=0.8)
-            texto = Label(font_name="fonts/FiraSans-Bold", font_size=12, color=(1, 1, 1, 1), size_hint_y=0.2)
-            bl = BoxLayout(orientation='vertical')
-            bl.add_widget(pg)
-            bl.add_widget(texto)
-            pgpopup = Popup(title='Progreso de la operaci\u00f3n', separator_color=(0.7725, 0.9882, 0.9412, 1),
-                            title_color=(0.7725, 0.9882, 0.9412, 1), title_font="fonts/FiraSans-ThinItalic",
-                            content=bl, size_hint=(None, None), size=(350, 100))
-            pgpopup.bind(on_dismiss=self.proceso_completado)
-            pgpopup.open()
+            self.mostrar_barra_progreso()
 
             hilopccg = HiloProcesoConfirmarCambiarGrafica(self.proyecto, self.et_spinner.text, self.paq_spinner.text,
                                                           self.exp_spinner.text, self.tipog_spinner.text.casefold(),
                                                           self.estilog_spinner.text.casefold(),
-                                                          self.interpg_spinner.text.casefold(), pg, texto)
+                                                          self.interpg_spinner.text.casefold(), self.pg, self.texto)
             hilopccg.start()
 
     def proceso_completado(self, inst):
