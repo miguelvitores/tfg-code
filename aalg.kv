@@ -2405,161 +2405,195 @@
                     text: "Aumentar repeticiones"
                     font_size: 22
 
-                GridLayout:
+                BoxLayout:
                     size_hint_y: 0.8
-                    cols: 2
-                    rows: 5
+                    orientation: 'vertical'
+                    rows: 2
 
-                    MediumLabel:
-                        size_hint_x: 0.4
-                        text: "Nombre espacio de trabajo"
-
-                    BoxLayout:
-                        size_hint_x: 0.6
-                        orientation: 'vertical'
-                        rows: 3
-
-                        BoxLayout:
-                            size_hint_y: 0.46
-
-                        BoxLayout:
-                            size_hint_y: 0.08
-                            orientation: 'horizontal'
-                            cols: 3
-
-                            BoxLayout:
-                                size_hint_x: 0.15
-
-                            SpinnerWidget:
-                                id: et_spinner6
-                                background_color: (0, 0, 0, 1)
-                                color: (1, 1, 1, 1)
-                                font_name: "fonts/FiraSans-Bold"
-                                size_hint_y: None
-                                height: 40
-                                size_hint_x: 0.7
-                                text_size: (200, None)
-                                halign: 'center'
-                                on_text: root.actualizar_paqs(self.text)
-
-                            BoxLayout:
-                                size_hint_x: 0.15
-
-                        BoxLayout:
-                            size_hint_y: 0.46
-
-                    MediumLabel:
-                        size_hint_x: 0.4
-                        text: "Nombre paquete"
-
-                    BoxLayout:
-                        size_hint_x: 0.6
-                        orientation: 'vertical'
-                        rows: 3
-
-                        BoxLayout:
-                            size_hint_y: 0.46
-
-                        BoxLayout:
-                            size_hint_y: 0.08
-                            orientation: 'horizontal'
-                            cols: 3
-
-                            BoxLayout:
-                                size_hint_x: 0.15
-
-                            SpinnerWidget:
-                                id: paq_spinner4
-                                background_color: (0, 0, 0, 1)
-                                color: (1, 1, 1, 1)
-                                font_name: "fonts/FiraSans-Bold"
-                                size_hint_y: None
-                                height: 40
-                                size_hint_x: 0.7
-                                text_size: (200, None)
-                                halign: 'center'
-                                on_text: root.actualizar_exps(et_spinner6.text, self.text)
-
-                            BoxLayout:
-                                size_hint_x: 0.15
-
-                        BoxLayout:
-                            size_hint_y: 0.46
-
-                    MediumLabel:
-                        size_hint_x: 0.4
-                        text: "Nombre experimento"
-
-                    BoxLayout:
-                        size_hint_x: 0.6
-                        orientation: 'vertical'
-                        rows: 3
-
-                        BoxLayout:
-                            size_hint_y: 0.46
-
-                        BoxLayout:
-                            size_hint_y: 0.08
-                            orientation: 'horizontal'
-                            cols: 3
-
-                            BoxLayout:
-                                size_hint_x: 0.15
-
-                            SpinnerWidget:
-                                id: exp_spinner3
-                                background_color: (0, 0, 0, 1)
-                                color: (1, 1, 1, 1)
-                                font_name: "fonts/FiraSans-Bold"
-                                size_hint_y: None
-                                height: 40
-                                size_hint_x: 0.7
-                                text_size: (200, None)
-                                halign: 'center'
-
-                            BoxLayout:
-                                size_hint_x: 0.15
-
-                        BoxLayout:
-                            size_hint_y: 0.46
-
-                    MediumLabel:
-                        text: "N\u00famero de repeticiones"
-
-                    BoxLayout:
+                    GridLayout:
                         cols: 2
-                        orientation: 'horizontal'
+                        rows: 3
 
-                        Slider:
-                            id: slid_repet
-                            value: 16
-                            min: 1
-                            max: 256
-                            step: 1
-                            value_track: True
-                            value_track_color: (1.0, 0.9412, 0.7922, 1)
+                        MediumLabel:
+                            size_hint_x: 0.4
+                            text: "Nombre espacio de trabajo"
 
-                        MiniLabel:
-                            text: str(slid_repet.value)
+                        BoxLayout:
+                            size_hint_x: 0.6
+                            orientation: 'vertical'
+                            rows: 3
 
-                    MediumLabel:
-                        text: "N\u00famero de veces"
+                            BoxLayout:
+                                size_hint_y: 0.46
+
+                            BoxLayout:
+                                size_hint_y: 0.08
+                                orientation: 'horizontal'
+                                cols: 3
+
+                                BoxLayout:
+                                    size_hint_x: 0.15
+
+                                SpinnerWidget:
+                                    id: et_spinner6
+                                    background_color: (0, 0, 0, 1)
+                                    color: (1, 1, 1, 1)
+                                    font_name: "fonts/FiraSans-Bold"
+                                    size_hint_y: None
+                                    height: 40
+                                    size_hint_x: 0.7
+                                    text_size: (200, None)
+                                    halign: 'center'
+                                    on_text: root.actualizar_paqs(self.text)
+
+                                BoxLayout:
+                                    size_hint_x: 0.15
+
+                            BoxLayout:
+                                size_hint_y: 0.46
+
+                        MediumLabel:
+                            size_hint_x: 0.4
+                            text: "Nombre paquete"
+
+                        BoxLayout:
+                            size_hint_x: 0.6
+                            orientation: 'vertical'
+                            rows: 3
+
+                            BoxLayout:
+                                size_hint_y: 0.46
+
+                            BoxLayout:
+                                size_hint_y: 0.08
+                                orientation: 'horizontal'
+                                cols: 3
+
+                                BoxLayout:
+                                    size_hint_x: 0.15
+
+                                SpinnerWidget:
+                                    id: paq_spinner4
+                                    background_color: (0, 0, 0, 1)
+                                    color: (1, 1, 1, 1)
+                                    font_name: "fonts/FiraSans-Bold"
+                                    size_hint_y: None
+                                    height: 40
+                                    size_hint_x: 0.7
+                                    text_size: (200, None)
+                                    halign: 'center'
+                                    on_text: root.actualizar_exps(et_spinner6.text, self.text)
+
+                                BoxLayout:
+                                    size_hint_x: 0.15
+
+                            BoxLayout:
+                                size_hint_y: 0.46
+
+                        MediumLabel:
+                            size_hint_x: 0.4
+                            text: "Nombre experimento"
+
+                        BoxLayout:
+                            size_hint_x: 0.6
+                            orientation: 'vertical'
+                            rows: 3
+
+                            BoxLayout:
+                                size_hint_y: 0.46
+
+                            BoxLayout:
+                                size_hint_y: 0.08
+                                orientation: 'horizontal'
+                                cols: 3
+
+                                BoxLayout:
+                                    size_hint_x: 0.15
+
+                                SpinnerWidget:
+                                    id: exp_spinner3
+                                    background_color: (0, 0, 0, 1)
+                                    color: (1, 1, 1, 1)
+                                    font_name: "fonts/FiraSans-Bold"
+                                    size_hint_y: None
+                                    height: 40
+                                    size_hint_x: 0.7
+                                    text_size: (200, None)
+                                    halign: 'center'
+
+                                BoxLayout:
+                                    size_hint_x: 0.15
+
+                            BoxLayout:
+                                size_hint_y: 0.46
 
                     BoxLayout:
-                        cols: 2
                         orientation: 'horizontal'
+                        cols: 3
+                        spacing: 200
 
-                        Slider:
-                            id: slid_nveces
-                            value: 1
-                            min: 1
-                            max: 16
-                            step: 1
-                            value_track: True
-                            value_track_color: (1.0, 0.9412, 0.7922, 1)
+                        canvas:
+                            Color:
+                                rgba: (0.8, 0.7529, 0.6314, 1)
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
 
-                        MiniLabel:
-                            text: str(slid_nveces.value)
+                        BoxLayout:
+                            rows: 2
+                            orientation: 'vertical'
+
+                            MediumLabel:
+                                text: "N\u00famero de repeticiones"
+                                font_size: 18
+                                size_hint_y: 0.3
+
+                            BoxLayout:
+                                cols: 2
+                                orientation: 'horizontal'
+                                size_hint_y: 0.7
+
+                                Slider:
+                                    id: slid_repet
+                                    value: 16
+                                    min: 1
+                                    max: 256
+                                    step: 1
+                                    value_track: True
+                                    value_track_color: (0.7725, 0.9882, 0.9412, 1)
+                                    size_hint_x: 0.8
+
+                                MiniLabel:
+                                    text: str(slid_repet.value)
+                                    size_hint_x: 0.2
+
+                        BoxLayout:
+                            rows: 2
+                            orientation: 'vertical'
+
+                            MediumLabel:
+                                text: "N\u00famero de veces"
+                                font_size: 18
+                                size_hint_y: 0.3
+
+                            BoxLayout:
+                                cols: 2
+                                orientation: 'horizontal'
+                                size_hint_y: 0.7
+
+                                Slider:
+                                    id: slid_nveces
+                                    value: 1
+                                    min: 1
+                                    max: 16
+                                    step: 1
+                                    value_track: True
+                                    value_track_color: (0.7725, 0.9882, 0.9412, 1)
+                                    size_hint_x: 0.8
+
+                                MiniLabel:
+                                    text: str(slid_nveces.value)
+                                    size_hint_x: 0.2
 
             BoxLayout:
                 orientation: 'horizontal'
