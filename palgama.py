@@ -158,6 +158,11 @@ class AbrirPrHijosComportamiento:
             sm.remove_widget(screen)
         except ScreenManagerException:
             pass
+        try:
+            screen = sm.get_screen("aumentor_{0}".format(self.proyecto.nombre))
+            sm.remove_widget(screen)
+        except ScreenManagerException:
+            pass
 
 
 class BarraProgresoComportamiento(AbrirPrHijosComportamiento):
@@ -289,7 +294,6 @@ class DropdownAbrirProyecto(DropdownComportamiento):
         sm.add_widget(PrincipalScreen(name="principal"))
         sm.switch_to(sm.get_screen("principal"))
         sm.remove_widget(sm.get_screen("abrirpr_{0}".format(self.proyecto.nombre)))
-
 
     @staticmethod
     def presionar_cancelar_importar_proyecto(btn):
@@ -484,12 +488,25 @@ class DropdownGraficasAvanzadas(DropdownComportamiento):
         btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
         btn.bind(on_release=self.soltar_cambiog)
         self.add_widget(btn)
+        btn = Button(text="Aumentar repeticiones", size_hint_y=None, height=50, background_normal='',
+                     background_down='', background_color=(0.4, 0.6078, 0.5647, 1))
+        btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
+        btn.bind(on_release=self.soltar_aumentor)
+        self.add_widget(btn)
 
     def soltar_cambiog(self, btn):
         try:
             screen = sm.get_screen("cambiog_{0}".format(self.proyecto.nombre))
         except ScreenManagerException:
             screen = CambiarGraficaScreen(self.proyecto, name="cambiog_{0}".format(self.proyecto.nombre))
+            sm.add_widget(screen)
+        sm.switch_to(screen)
+
+    def soltar_aumentor(self, btn):
+        try:
+            screen = sm.get_screen("aumentor_{0}".format(self.proyecto.nombre))
+        except ScreenManagerException:
+            screen = AumentoRepeticionesScreen(self.proyecto, name="aumentor_{0}".format(self.proyecto.nombre))
             sm.add_widget(screen)
         sm.switch_to(screen)
 
@@ -561,7 +578,8 @@ class PrincipalLayout(GridLayout):
                           color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
         box.add_widget(boton_si)
         box.add_widget(boton_no)
-        popup = Popup(title='¿Desea comprimir el proyecto: {}?'.format(nombre), separator_color=(0.4, 0.6078, 0.5647, 1),
+        popup = Popup(title='¿Desea comprimir el proyecto: {}?'.format(nombre),
+                      separator_color=(0.4, 0.6078, 0.5647, 1),
                       title_color=(0.4, 0.6078, 0.5647, 1), title_font="fonts/FiraSans-ThinItalic",
                       content=box, size_hint=(None, None), size=(450, 125))
         popup.open()
@@ -1613,6 +1631,69 @@ class CambiarGraficaLayout(GridLayout, BarraProgresoComportamiento):
         popup.open()
 
 
+class AumentoRepeticionesLayout(GridLayout, BarraProgresoComportamiento, AbrirPrHijosComportamiento):
+    rows = 2
+    et_spinner = ObjectProperty()
+    paq_spinner = ObjectProperty()
+    exp_spinner = ObjectProperty()
+    slid_repet = ObjectProperty()
+    slid_nveces = ObjectProperty()
+
+    def __init__(self, proyecto, **kwargs):
+        super().__init__(proyecto=proyecto, **kwargs)
+        self.proyecto = proyecto
+        self.et_spinner.values = self.proyecto.espacios_trabajo.keys()
+        if len(self.et_spinner.values) == 0:
+            self.et_spinner.text = "No hay ningún espacio de trabajo"
+            self.paq_spinner.text = "No hay ningún paquete"
+            self.exp_spinner.text = "No hay ningún experimento"
+        else:
+            self.et_spinner.text = self.et_spinner.values[0]
+            self.actualizar_paqs(self.et_spinner.text)
+            self.actualizar_exps(self.et_spinner.text, self.paq_spinner.text)
+
+    def actualizar_paqs(self, nombre_et):
+        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        if len(self.paq_spinner.values) == 0:
+            self.paq_spinner.text = "No hay ningún paquete"
+        else:
+            self.paq_spinner.text = self.paq_spinner.values[0]
+
+    def actualizar_exps(self, nombre_et, nombre_paq):
+        self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
+        if len(self.exp_spinner.values) == 0:
+            self.exp_spinner.text = "No hay ningún experimento"
+        else:
+            self.exp_spinner.text = self.exp_spinner.values[0]
+
+    def confirmar(self, inst):
+        if len(self.exp_spinner.values) == 0:
+            popup = Popup(title='Error aumentando repeticiones', separator_color=(0.9059, 0.3451, 0.3529, 1),
+                          title_color=(0.9059, 0.3451, 0.3529, 1), title_font="fonts/FiraSans-ThinItalic",
+                          content=Label(text='Ningún experimento v\u00e1lido',
+                                        font_name="fonts/FiraSans-SemiBold",
+                                        color=(1, 1, 1, 1)
+                                        ), size_hint=(None, None), size=(350, 100))
+            popup.open()
+        else:
+            self.mostrar_barra_progreso()
+
+            hilopar = HiloProcesoAumentarRepeticiones(self.proyecto, self.et_spinner.text, self.paq_spinner.text,
+                                                      self.exp_spinner.text, self.pg, self.texto,
+                                                      self.slid_repet.value, self.slid_nveces.value)
+            hilopar.start()
+
+    def proceso_completado(self, inst):
+        self.recargar_proyecto()
+        popup = Popup(title='Repeticiones aumentadas', separator_color=(0.5451, 0.9529, 0.4235, 1),
+                      title_color=(0.5451, 0.9529, 0.4235, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=Label(text='Se han aumentado las repeticiones del experimento',
+                                    font_name="fonts/FiraSans-SemiBold",
+                                    color=(1, 1, 1, 1)
+                                    ), size_hint=(None, None), size=(450, 100))
+        popup.open()
+
+
 # Hilos
 
 class HiloProcesoCrearExperimento(threading.Thread):
@@ -1631,6 +1712,27 @@ class HiloProcesoCrearExperimento(threading.Thread):
         tupla_pg = (self.pg, self.texto)
         self.td.analizar(tupla_pg)
         self.proyecto.crear_experimento(self.et, self.paq, self.exp, self.td, tupla_pg)
+        self.texto.color = (0.5451, 0.9529, 0.4235, 1)
+        self.texto.text = "Completado"
+
+
+class HiloProcesoAumentarRepeticiones(threading.Thread):
+    def __init__(self, proyecto, et, paq, exp, pg, texto, repet, n_veces):
+        super().__init__()
+        self.proyecto = proyecto
+        self.et = et
+        self.paq = paq
+        self.exp = exp
+        self.td = cargar.obtener_testdata(proyecto.nombre, et, paq, exp)
+        self.pg = pg
+        self.texto = texto
+        self.td.repet = repet
+        self.n_veces = n_veces
+
+    def run(self):
+        self.texto.text = "Comenzando"
+        tupla_pg = (self.pg, self.texto)
+        self.proyecto.aumentar_repeticiones(self.et, self.paq, self.exp, self.td, tupla_pg, self.n_veces)
         self.texto.color = (0.5451, 0.9529, 0.4235, 1)
         self.texto.text = "Completado"
 
@@ -1723,6 +1825,12 @@ class CambiarGraficaScreen(Screen):
     def __init__(self, proyecto: Proyecto, **kw):
         super().__init__(**kw)
         self.add_widget(CambiarGraficaLayout(proyecto))
+
+
+class AumentoRepeticionesScreen(Screen):
+    def __init__(self, proyecto: Proyecto, **kw):
+        super().__init__(**kw)
+        self.add_widget(AumentoRepeticionesLayout(proyecto))
 
 
 # Aplicación

@@ -68,7 +68,8 @@ class Proyecto:
         else:
             tipo_alg = "ordenación"
         nombre_alg = alg_perm_pd[tipo_alg][testdata.algoritmo.nombre]
-        graf.title = "{0} - {1} {2}".format(nombre_exp, tipo_alg.capitalize(), nombre_alg.capitalize())
+        graf.title = "{0} - {1} {2}:iter{3}".format(nombre_exp, tipo_alg.capitalize(), nombre_alg.capitalize(),
+                                                    testdata.iter_an)
         graf.x_labels = testdata.resultados.keys()
         graf.x_title = "Tamaño listas"
         graf.add("tiempo_ejecución", [a.tiempo_ejecucion for a in testdata.resultados.values()])
@@ -79,7 +80,7 @@ class Proyecto:
         texto_popup.text = "Creando archivo png..."
         graf.render_to_png("{0}.png".format(ruta_exp))
         barra_progreso.value = 97.5
-        texto_popup.text = "Serializando objecto gráfica..."
+        texto_popup.text = "Serializando objeto gráfica..."
         serializa(graf, "{0}_graf.pickle".format(ruta_exp))
         barra_progreso.value = 100
         self.ult_modif = time.asctime(time.localtime(time.time()))
@@ -190,3 +191,9 @@ class Proyecto:
             return pygal.style.BlueStyle
         else:
             return pygal.style.DefaultStyle
+
+    def aumentar_repeticiones(self, nombre_et, nombre_p, nombre_exp, testdata, tupla_pg, n_veces=1):
+        testdata.recalcular(tupla_pg, n_veces)
+        self.eliminar_experimento(nombre_et, nombre_p, nombre_exp)
+        self.crear_experimento(nombre_et, nombre_p, nombre_exp, testdata, tupla_pg)
+        self.recargar_imagenes = True
