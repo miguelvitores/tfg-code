@@ -206,13 +206,14 @@ class DropdownAbrirProyecto(DropdownComportamiento):
         btn.bind(on_release=self.importar_proyecto)
         self.add_widget(btn)
         self.fc = FileChooserIconView(rootpath=os.path.join("data", "pr_comp"), filters=["*.zip"], filter_dirs=True)
+        self.boxroot = BoxLayout(orientation='vertical', rows=3)
         self.proyecto = None
         self.ruta_desc = None
 
     def importar_proyecto(self, btn):
         if len(self.fc.files) > 0:
-            boxroot = BoxLayout(orientation='vertical', rows=3)
-            boxroot.add_widget(self.fc)
+            self.boxroot = BoxLayout(orientation='vertical', rows=3)
+            self.boxroot.add_widget(self.fc)
             boxh = BoxLayout(orientation='horizontal', cols=2, size_hint_y=None, height=30)
             boton_si = Button(text='Importar', font_name="fonts/FiraSans-SemiBold",
                               color=(0, 0, 0, 1), background_color=(0.5451, 0.9529, 0.4235, 1))
@@ -220,11 +221,11 @@ class DropdownAbrirProyecto(DropdownComportamiento):
                               color=(0, 0, 0, 1), background_color=(0.9059, 0.3451, 0.3529, 1))
             boxh.add_widget(boton_si)
             boxh.add_widget(boton_no)
-            boxroot.add_widget(boxh)
+            self.boxroot.add_widget(boxh)
             popup = Popup(title='Elige el proyeto a importar',
                           separator_color=(0.4, 0.6078, 0.5647, 1),
                           title_color=(0.4, 0.6078, 0.5647, 1), title_font="fonts/FiraSans-ThinItalic",
-                          content=boxroot, size_hint=(None, None), size=(500, 450))
+                          content=self.boxroot, size_hint=(None, None), size=(500, 450))
             popup.open()
             boton_si.bind(on_press=self.presionar_importar_proyecto)
             boton_no.bind(on_press=self.presionar_cancelar_importar_proyecto)
@@ -293,17 +294,21 @@ class DropdownAbrirProyecto(DropdownComportamiento):
         sm.remove_widget(sm.get_screen("principal"))
         sm.add_widget(PrincipalScreen(name="principal"))
         sm.switch_to(sm.get_screen("principal"))
-        sm.remove_widget(sm.get_screen("abrirpr_{0}".format(self.proyecto.nombre)))
+        try:
+            screen = sm.get_screen("abrirpr_{0}".format(self.proyecto.nombre))
+            sm.remove_widget(screen)
+        except ScreenManagerException:
+            pass
 
     @staticmethod
     def presionar_cancelar_importar_proyecto(btn):
         btn.background_color = (0.8824, 0.1451, 0.0784, 1)
         btn.color = (1, 1, 1, 1)
 
-    @staticmethod
-    def soltar_cancelar_importar_proyecto(btn):
+    def soltar_cancelar_importar_proyecto(self, btn):
         btn.background_color = (0.949, 0.4667, 0.4196, 1)
         btn.color = (0, 0, 0, 1)
+        self.boxroot.remove_widget(self.fc)
 
     @staticmethod
     def presionar_sobrescribir_proyecto(btn):
@@ -318,10 +323,10 @@ class DropdownAbrirProyecto(DropdownComportamiento):
         btn.background_color = (0.8824, 0.1451, 0.0784, 1)
         btn.color = (1, 1, 1, 1)
 
-    @staticmethod
-    def soltar_cancelar_sobrescribir_proyecto(btn):
+    def soltar_cancelar_sobrescribir_proyecto(self, btn):
         btn.background_color = (0.949, 0.4667, 0.4196, 1)
         btn.color = (0, 0, 0, 1)
+        self.boxroot.remove_widget(self.fc)
 
 
 class DropdownProyectos(DropdownComportamiento):
