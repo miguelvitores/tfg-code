@@ -68,8 +68,10 @@ class Proyecto:
         else:
             tipo_alg = "ordenación"
         nombre_alg = alg_perm_pd[tipo_alg][testdata.algoritmo.nombre]
-        graf.title = "{0} - {1} {2}:iter{3}".format(nombre_exp, tipo_alg.capitalize(), nombre_alg.capitalize(),
-                                                    testdata.iter_an)
+        graf.title = "{0} - {1} {2}:repets{3},iter{4}".format(nombre_exp, tipo_alg.capitalize(),
+                                                              nombre_alg.capitalize(),
+                                                              testdata.repet_totales,
+                                                              testdata.iter_an)
         graf.x_labels = testdata.resultados.keys()
         graf.x_title = "Tamaño listas"
         graf.add("tiempo_ejecución", [a.tiempo_ejecucion for a in testdata.resultados.values()])

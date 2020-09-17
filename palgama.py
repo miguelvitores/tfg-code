@@ -479,7 +479,7 @@ class DropdownExperimentosOpciones(DropDown):
         sm.switch_to(screen)
 
 
-class DropdownGraficasAvanzadas(DropdownComportamiento):
+class DropdownOpcionesAvanzadas(DropdownComportamiento):
     def __init__(self, proyecto, **kwargs):
         super().__init__(**kwargs)
         self.proyecto = proyecto
@@ -936,7 +936,7 @@ class AbrirProyectoLayout(BoxLayout):
         self.label_nombrepr.text = self.proyecto.nombre
         self.filechooser.rootpath = proyecto.ruta
         self.dpdex = DropdownExperimentos(self.proyecto)
-        self.dpdga = DropdownGraficasAvanzadas(self.proyecto)
+        self.dpdoa = DropdownOpcionesAvanzadas(self.proyecto)
         self.dpdta = DropdownTeoriaAlgortimos(self.proyecto)
         for graf in self.proyecto.graficas_abiertas:
             self.add_pest(graf)
@@ -947,8 +947,8 @@ class AbrirProyectoLayout(BoxLayout):
     def soltar_dpdex(self, instancia):
         self.dpdex.open(instancia)
 
-    def soltar_dpdga(self, instancia):
-        self.dpdga.open(instancia)
+    def soltar_dpdoa(self, instancia):
+        self.dpdoa.open(instancia)
 
     def soltar_dpdta(self, instancia):
         self.dpdta.open(instancia)
