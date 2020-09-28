@@ -199,3 +199,11 @@ class Proyecto:
         self.eliminar_experimento(nombre_et, nombre_p, nombre_exp)
         self.crear_experimento(nombre_et, nombre_p, nombre_exp, testdata, tupla_pg)
         self.recargar_imagenes = True
+
+    def tiene_algun_paquete(self):
+        if len(self.espacios_trabajo):
+            return False
+        else:
+            for et in self.espacios_trabajo:
+                if len(et) > 0:
+                    return True

@@ -529,6 +529,16 @@ class DropdownTeoriaAlgortimos(DropdownComportamiento):
                 btn.bind(on_press=self.presionar_boton, on_release=self.soltar_boton)
                 self.add_widget(btn)
 
+    def soltar_boton(self, btn):
+        super().soltar_boton(btn)
+        popup = Popup(title='No disponible', separator_color=(0.949, 0.4667, 0.4196, 1),
+                      title_color=(0.949, 0.4667, 0.4196, 1), title_font="fonts/FiraSans-ThinItalic",
+                      content=Label(text='Botón no disponible temporalmente',
+                                    font_name="fonts/FiraSans-SemiBold",
+                                    color=(1, 1, 1, 1)
+                                    ), size_hint=(None, None), size=(450, 100))
+        popup.open()
+
 
 # Layouts
 
@@ -1586,25 +1596,25 @@ class CambiarGraficaLayout(GridLayout, BarraProgresoComportamiento):
         self.interpg_spinner.text = self.interpg_spinner.values[0]
         if len(self.et_spinner.values) == 0:
             self.et_spinner.text = "No hay ningún espacio de trabajo"
-            self.paq_spinner.text = "No hay ningún paquete"
-            self.exp_spinner.text = "No hay ningún experimento"
+            # self.paq_spinner.text = "No hay ningún paquete"
+            # self.exp_spinner.text = "No hay ningún experimento"
         else:
             self.et_spinner.text = self.et_spinner.values[0]
             self.actualizar_paqs(self.et_spinner.text)
             self.actualizar_exps(self.et_spinner.text, self.paq_spinner.text)
 
     def actualizar_paqs(self, nombre_et):
-        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
         if len(self.paq_spinner.values) == 0:
             self.paq_spinner.text = "No hay ningún paquete"
         else:
+            self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
             self.paq_spinner.text = self.paq_spinner.values[0]
 
     def actualizar_exps(self, nombre_et, nombre_paq):
-        self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
         if len(self.exp_spinner.values) == 0:
             self.exp_spinner.text = "No hay ningún experimento"
         else:
+            self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
             self.exp_spinner.text = self.exp_spinner.values[0]
 
     def confirmar(self, inst):
@@ -1650,25 +1660,23 @@ class AumentoRepeticionesLayout(GridLayout, BarraProgresoComportamiento, AbrirPr
         self.et_spinner.values = self.proyecto.espacios_trabajo.keys()
         if len(self.et_spinner.values) == 0:
             self.et_spinner.text = "No hay ningún espacio de trabajo"
-            self.paq_spinner.text = "No hay ningún paquete"
-            self.exp_spinner.text = "No hay ningún experimento"
         else:
             self.et_spinner.text = self.et_spinner.values[0]
             self.actualizar_paqs(self.et_spinner.text)
             self.actualizar_exps(self.et_spinner.text, self.paq_spinner.text)
 
     def actualizar_paqs(self, nombre_et):
-        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
         if len(self.paq_spinner.values) == 0:
             self.paq_spinner.text = "No hay ningún paquete"
         else:
+            self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
             self.paq_spinner.text = self.paq_spinner.values[0]
 
     def actualizar_exps(self, nombre_et, nombre_paq):
-        self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
         if len(self.exp_spinner.values) == 0:
             self.exp_spinner.text = "No hay ningún experimento"
         else:
+            self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
             self.exp_spinner.text = self.exp_spinner.values[0]
 
     def confirmar(self, inst):
