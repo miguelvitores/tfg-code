@@ -1201,7 +1201,10 @@ class CrearExperimentoLayout(GridLayout, BarraProgresoComportamiento):
         self.rangov_desactivado = True
 
     def actualizar_paqs(self, nombre_et):
-        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        try:
+            self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        except KeyError:
+            pass
         if len(self.paq_spinner.values) == 0:
             self.paq_spinner.text = "No hay ningún paquete"
         else:
@@ -1432,7 +1435,10 @@ class EliminarPaqueteLayout(GridLayout, AbrirPrHijosComportamiento):
             self.actualizar_paqs(self.et_spinner.text)
 
     def actualizar_paqs(self, nombre_et):
-        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        try:
+            self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        except KeyError:
+            pass
         if len(self.paq_spinner.values) == 0:
             self.paq_spinner.text = "No hay ningún paquete"
         else:
@@ -1508,14 +1514,20 @@ class EliminarExperimentoLayout(GridLayout, AbrirPrHijosComportamiento):
             self.actualizar_exps(self.et_spinner.text, self.paq_spinner.text)
 
     def actualizar_paqs(self, nombre_et):
-        self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        try:
+            self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        except KeyError:
+            pass
         if len(self.paq_spinner.values) == 0:
             self.paq_spinner.text = "No hay ningún paquete"
         else:
             self.paq_spinner.text = self.paq_spinner.values[0]
 
     def actualizar_exps(self, nombre_et, nombre_paq):
-        self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
+        try:
+            self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
+        except KeyError:
+            pass
         if len(self.exp_spinner.values) == 0:
             self.exp_spinner.text = "No hay ningún experimento"
         else:
@@ -1604,6 +1616,10 @@ class CambiarGraficaLayout(GridLayout, BarraProgresoComportamiento):
             self.actualizar_exps(self.et_spinner.text, self.paq_spinner.text)
 
     def actualizar_paqs(self, nombre_et):
+        try:
+            self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        except KeyError:
+            pass
         if len(self.paq_spinner.values) == 0:
             self.paq_spinner.text = "No hay ningún paquete"
         else:
@@ -1611,6 +1627,10 @@ class CambiarGraficaLayout(GridLayout, BarraProgresoComportamiento):
             self.paq_spinner.text = self.paq_spinner.values[0]
 
     def actualizar_exps(self, nombre_et, nombre_paq):
+        try:
+            self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
+        except KeyError:
+            pass
         if len(self.exp_spinner.values) == 0:
             self.exp_spinner.text = "No hay ningún experimento"
         else:
@@ -1666,6 +1686,10 @@ class AumentoRepeticionesLayout(GridLayout, BarraProgresoComportamiento, AbrirPr
             self.actualizar_exps(self.et_spinner.text, self.paq_spinner.text)
 
     def actualizar_paqs(self, nombre_et):
+        try:
+            self.paq_spinner.values = self.proyecto.espacios_trabajo[nombre_et]
+        except KeyError:
+            pass
         if len(self.paq_spinner.values) == 0:
             self.paq_spinner.text = "No hay ningún paquete"
         else:
@@ -1673,6 +1697,10 @@ class AumentoRepeticionesLayout(GridLayout, BarraProgresoComportamiento, AbrirPr
             self.paq_spinner.text = self.paq_spinner.values[0]
 
     def actualizar_exps(self, nombre_et, nombre_paq):
+        try:
+            self.exp_spinner.values = self.proyecto.espacios_trabajo[nombre_et][nombre_paq]
+        except KeyError:
+            pass
         if len(self.exp_spinner.values) == 0:
             self.exp_spinner.text = "No hay ningún experimento"
         else:
